@@ -3358,7 +3358,7 @@
         <div>
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-bold text-slate-700">كلمة المرور (الرمز السري):</label>
-            <span class="text-[10px] text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded-md">الافتراضية = رقم الطالب نفسه</span>
+            <span class="text-[10px] text-slate-500 font-bold bg-slate-50 px-2 py-0.5 rounded-md">رمز الدخول الخاص بالطالب</span>
           </div>
           <div class="relative">
             <input type="password" id="authStudentPasswordInput" placeholder="أدخل كلمة المرور الخاصة بك..." 
@@ -3641,7 +3641,7 @@
         <input type="password" id="authAdminPasswordInput" placeholder="أدخل كلمة مرور الإدارة..." 
           onkeydown="if(event.key === 'Enter') submitAdminAuth()"
           class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none">
-        <p class="text-[11px] text-slate-400">💡 كلمة المرور الافتراضية للإدارة: <strong class="text-slate-600">makkah2027</strong></p>
+        <p class="text-[11px] text-slate-400">🔒 كلمة المرور سرية وخاصة بإدارة المدرسة المصرح لها فقط.</p>
         <p id="adminAuthError" class="text-xs font-bold text-rose-600 hidden"></p>
       </div>
 
@@ -3682,7 +3682,7 @@
         <input type="password" id="authFeesPasswordInput" placeholder="أدخل رمز الدخول المالي..." 
           onkeydown="if(event.key === 'Enter') submitFeesAuth()"
           class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
-        <p class="text-[11px] text-slate-400">💡 رمز المرور المعتمد: <strong class="text-slate-700 font-mono">2027</strong> أو <strong class="text-slate-700 font-mono">makkah2027</strong></p>
+        <p class="text-[11px] text-slate-400">🔒 رمز الدخول سري ومخصص للمسؤول المالي وإدارة المدرسة فقط.</p>
         <p id="feesAuthError" class="text-xs font-bold text-rose-600 hidden"></p>
       </div>
 
@@ -7224,7 +7224,7 @@ const firebaseConfig = {
 
       if (!rawPass) {
         if (err) {
-          err.textContent = "يرجى إدخال رمز المرور (الافتراضي: رقم قيدك أو كود الطالب)!";
+          err.textContent = "يرجى إدخال كلمة المرور الخاصة بك!";
           err.classList.remove("hidden");
         }
         return;
@@ -7295,7 +7295,7 @@ const firebaseConfig = {
       const isPassValid = allowedPasswords.some(p => p.trim() === rawPass);
       if (!isPassValid) {
         if (err) {
-          err.textContent = "كلمة المرور غير صحيحة! يمكنك استخدام رقم قيدك أو كود الطالب ككلمة مرور افتراضية.";
+          err.textContent = "كلمة المرور غير صحيحة! يرجى التأكد من الرمز السري أو مراجعة إدارة الكنترول بالمدرسة.";
           err.classList.remove("hidden");
         }
         playWrongAnswerSound();
