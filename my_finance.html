@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
   <title>بوابة المعلم - البطاقة المالية وكشف الحساب | مدارس مكة الأهلية الحديثة</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,9 +17,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Official Teachers Database & Finance Records (School Pro) -->
+  <!-- Offline Storage Engine & School Pro Databases -->
+  <script src="offline_storage_engine.js"></script>
   <script src="makkah_teachers_data.js"></script>
   <script src="makkah_teachers_finance_data.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
   <style>
     body {
       font-family: 'Cairo', 'Tajawal', sans-serif;
