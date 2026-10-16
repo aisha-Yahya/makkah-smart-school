@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>البطاقة المالية للمعلمين والموظفين - مدارس مكة الأهلية الحديثة</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Official Teachers Database & Finance Records (School Pro) -->
+  <script src="makkah_teachers_data.js"></script>
+  <script src="makkah_teachers_finance_data.js"></script>
+  <style>
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fc 50%, #f8fafc 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.08);
+    }
+    .official-doc-sheet {
+      border: 3px double #1e3a8a;
+      border-radius: 12px;
+      padding: 24px;
+      background: #ffffff;
+      color: #0f172a;
+      position: relative;
+    }
+    .official-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .official-table th, .official-table td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+    }
+    .official-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .stamp-box {
+      width: 95px;
+      height: 95px;
+      border: 2px dashed #94a3b8;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 9px;
+      color: #64748b;
+      font-weight: bold;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      body.printing-statement #statementModal {
+        position: static !important;
+        background: none !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      body.printing-statement #statementModal > div {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: none !important;
+        height: auto !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      body.printing-statement #printableStatementArea {
+        max-height: none !important;
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      body.printing-statement main,
+      body.printing-statement header,
+      body.printing-statement .modal-actions {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-purple-100 selection:text-purple-900">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-black shadow-md hover:scale-105 transition overflow-hidden border border-purple-100 p-0.5" title="العودة للرئيسية">
+          <img src="school_logo.jpg" alt="شعار مدارس مكة" class="w-full h-full object-contain rounded-xl" onerror="this.src='logo.png'">
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-black text-slate-900 leading-tight">مدارس مكة الأهلية الحديثة</h1>
+            <span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>سكول برو • مالية المعلمين</span>
+            </span>
+          </div>
+          <p class="text-xs text-purple-600 font-medium">البطاقة المالية وكشوفات السلف والخصومات والرواتب</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <span id="liveSyncStatus" class="hidden sm:inline-flex text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+          متصل بسكول برو الحي ⚡
+        </span>
+        <button id="btnTriggerSyncTeachers" onclick="triggerLiveSyncTeachers()" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="سحب وتحديث السلف والرواتب الجديدة من سكول برو فوراً">
+          <i data-lucide="refresh-cw" class="w-4 h-4" id="iconSyncTeachers"></i>
+          <span id="btnTriggerSyncTeachersText">تحديث من سكول برو 🔄</span>
+        </button>
+        <button onclick="exportTeachersToCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>تصدير Excel 📊</span>
+        </button>
+        <button onclick="lockTeachersPortal()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs" title="قفل شاشة الحسابات">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>قفل 🔒</span>
+        </button>
+        <a href="fees.html" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="كشف رسوم الطلاب">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span class="hidden md:inline">رسوم الطلاب</span>
+        </a>
+        <a href="index.html" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="home" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">الرئيسية</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Teacher Self-Service Notice Banner -->
+    <div class="bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border border-purple-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xs no-print">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+          <i data-lucide="wallet-cards" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="font-black text-slate-900 text-sm">هل أنت معلم وتريد استعراض بطاقتك وسجلك المالي فقط؟</h4>
+          <p class="text-slate-500 text-xs">خصصنا بوابة خاصة بالمعلم لإدخال كودك الوظيفي وعرض بطاقتك بخصوصية تامة دون الاطلاع على رواتب زملائك.</p>
+        </div>
+      </div>
+      <a href="my_finance.html" class="px-4 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-black transition flex items-center gap-2 shadow-sm shrink-0">
+        <i data-lucide="id-card" class="w-4 h-4"></i>
+        <span>بوابة استعلام المعلم بكوده 💳</span>
+      </a>
+    </div>
+
+    <!-- Overview Financial Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="glass-card rounded-3xl p-5 border border-purple-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">المعلمين والموظفين</span>
+          <span class="text-xl font-black text-slate-900 mt-0.5 block" id="statTotalEmployees">--</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-blue-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+          <i data-lucide="coins" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي الرواتب</span>
+          <span class="text-xl font-black text-blue-700 mt-0.5 block" id="statTotalSalaries">--</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-amber-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+          <i data-lucide="hand-coins" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي السلف المأخوذة</span>
+          <span class="text-xl font-black text-amber-600 mt-0.5 block" id="statTotalAdvances">--</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-rose-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center">
+          <i data-lucide="scissors" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي الخصومات</span>
+          <span class="text-xl font-black text-rose-600 mt-0.5 block" id="statTotalDeductions">--</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-emerald-100 shadow-xs flex items-center gap-4 col-span-2 lg:col-span-1">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <i data-lucide="wallet" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">صافي الرواتب المتبقية</span>
+          <span class="text-xl font-black text-emerald-600 mt-0.5 block" id="statNetPayable">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="glass-card rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-5 h-5 absolute right-4 top-3.5 text-slate-400"></i>
+          <input type="text" id="searchInput" oninput="debounceSearch()" placeholder="بحث باسم المعلم، الكود، أو رقم الهاتف..." 
+            class="w-full pr-12 pl-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition">
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Academic Year Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-2 rounded-2xl border border-slate-200">
+            <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i>
+            <span class="text-xs font-bold text-slate-500">العام:</span>
+            <select id="yearFilter" onchange="fetchTeachersData()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
+              <option value="2026">2026 - 2027م (العام الحالي)</option>
+              <option value="2025">2025 - 2026م</option>
+              <option value="2024">2024 - 2025م</option>
+              <option value="2023">2023 - 2024م</option>
+              <option value="all">جميع السنوات (تراكمي)</option>
+            </select>
+          </div>
+
+          <!-- Month Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-2 rounded-2xl border border-slate-200">
+            <i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>
+            <span class="text-xs font-bold text-slate-500">الشهر:</span>
+            <select id="monthFilter" onchange="fetchTeachersData()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
+              <option value="all">كل الشهور</option>
+              <option value="9">سبتمبر (9)</option>
+              <option value="8">أغسطس (8)</option>
+              <option value="7">يوليو (7)</option>
+              <option value="6">يونيو (6)</option>
+              <option value="5">مايو (5)</option>
+              <option value="4">أبريل (4)</option>
+              <option value="3">مارس (3)</option>
+              <option value="2">فبراير (2)</option>
+              <option value="1">يناير (1)</option>
+              <option value="10">أكتوبر (10)</option>
+              <option value="11">نوفمبر (11)</option>
+              <option value="12">ديسمبر (12)</option>
+            </select>
+          </div>
+
+          <!-- Job Title Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-2 rounded-2xl border border-slate-200">
+            <i data-lucide="briefcase" class="w-4 h-4 text-purple-600"></i>
+            <span class="text-xs font-bold text-slate-500">الوظيفة:</span>
+            <select id="jobFilter" onchange="fetchTeachersData()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
+              <option value="all">كل الوظائف</option>
+              <option value="مدرس">مدرس</option>
+              <option value="وكيل">وكيل</option>
+              <option value="مشرف">مشرف</option>
+              <option value="سكرتارية">سكرتارية</option>
+              <option value="أمين الصندوق">أمين الصندوق</option>
+              <option value="إدارة">إدارة</option>
+            </select>
+          </div>
+
+          <button onclick="resetFilters()" class="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="إعادة ضبط الفلاتر">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Main Teachers Table -->
+    <div class="glass-card rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-black text-slate-900">سجل حسابات وبطاقات المعلمين والموظفين</h2>
+          <p class="text-xs text-slate-500 mt-0.5">تفاصيل السلف والخصومات والرواتب الصادرة من واقع نظام سكول برو</p>
+        </div>
+        <span id="recordsBadge" class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">
+          عرض 0 معلم
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right border-collapse">
+          <thead>
+            <tr class="bg-slate-50/80 text-slate-600 text-xs font-black border-b border-slate-200">
+              <th class="py-4 px-4 text-center">#</th>
+              <th class="py-4 px-4">المعلم / الموظف</th>
+              <th class="py-4 px-4">الوظيفة</th>
+              <th class="py-4 px-4 text-indigo-800">الراتب الشهري</th>
+              <th class="py-4 px-4 text-amber-700">السلف المأخوذة</th>
+              <th class="py-4 px-4 text-rose-700">الخصومات</th>
+              <th class="py-4 px-4 text-blue-700">المسلَّم نقداً</th>
+              <th class="py-4 px-4 text-emerald-700">المتبقي له</th>
+              <th class="py-4 px-4 text-center">آخر حركة</th>
+              <th class="py-4 px-4 text-center">البطاقة المالية</th>
+            </tr>
+          </thead>
+          <tbody id="teachersTableBody" class="divide-y divide-slate-100 text-sm">
+            <tr>
+              <td colspan="10" class="py-12 text-center text-slate-400">
+                <i data-lucide="loader-2" class="w-8 h-8 mx-auto animate-spin mb-2 text-purple-600"></i>
+                <p class="font-bold text-sm">جاري تحميل كشوفات وحسابات المعلمين من سكول برو...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Teacher Financial Statement Modal (البطاقة المالية الشاملة للمعلم) -->
+  <div id="statementModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex items-center justify-center">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+      
+      <!-- Modal Header (Non-print) -->
+      <div class="p-5 sm:p-6 bg-gradient-to-r from-purple-800 to-indigo-800 text-white flex items-center justify-between no-print shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+            <i data-lucide="wallet-cards" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black" id="modalTeacherName">--</h3>
+            <p class="text-xs text-purple-200 mt-0.5" id="modalTeacherSub">البطاقة المالية وكشف الحساب التفصيلي</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 modal-actions">
+          <button onclick="printTeacherStatement()" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center gap-1.5">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>طباعة البطاقة 🖨️</span>
+          </button>
+          <button onclick="closeStatementModal()" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Printable Official Sheet) -->
+      <div class="p-5 sm:p-8 space-y-6 overflow-y-auto flex-1" id="printableStatementArea">
+        
+        <!-- Official Document Sheet -->
+        <div class="official-doc-sheet space-y-5">
+          
+          <!-- Document Header -->
+          <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4">
+            <div class="text-right">
+              <h2 class="text-base font-black text-slate-900">الجمهورية اليمنية</h2>
+              <h3 class="text-xs font-bold text-slate-700">وزارة التربية والتعليم</h3>
+              <h1 class="text-base font-black text-purple-900 mt-1">مدارس مكة الأهلية الحديثة</h1>
+              <p class="text-[10px] text-slate-500 font-bold">إدارة الشؤون المالية والحسابات</p>
+            </div>
+            <div class="text-center">
+              <img src="school_logo.jpg" alt="شعار مدارس مكة الأهلية الحديثة" class="h-16 w-16 object-contain mx-auto rounded-2xl p-1 bg-white border border-slate-200 shadow-xs" onerror="this.src='logo.png'">
+              <span class="inline-block mt-1.5 text-[11px] font-black bg-purple-100 text-purple-900 px-3 py-0.5 rounded-full border border-purple-200">
+                بطاقة الحساب المالي للمعلم
+              </span>
+            </div>
+            <div class="text-left text-xs font-bold text-slate-600 space-y-1">
+              <div>التاريخ: <span id="docPrintDate" class="text-slate-900">--</span></div>
+              <div>العام المالي: <span id="docAcademicYear" class="text-purple-800">--</span></div>
+              <div>المصدر: <span class="text-emerald-700">سكول برو المباشر</span></div>
+            </div>
+          </div>
+
+          <!-- Teacher Profile Cards Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+            <div>
+              <span class="text-slate-400 block font-bold text-[10px]">اسم المعلم / الموظف</span>
+              <span class="font-black text-slate-900 text-sm mt-0.5 block" id="docEmpName">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-bold text-[10px]">الرقم والكود الوظيفي</span>
+              <span class="font-bold text-purple-800 text-sm mt-0.5 block" id="docEmpCode">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-bold text-[10px]">المسمى الوظيفي</span>
+              <span class="font-bold text-slate-800 mt-0.5 block" id="docEmpJob">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-bold text-[10px]">حالة العمل</span>
+              <span class="font-bold text-emerald-700 mt-0.5 block" id="docEmpStatus">نشط</span>
+            </div>
+          </div>
+
+          <!-- Financial Balances Summary Ribbon -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+              <span class="text-[10px] font-bold text-blue-700 block">إجمالي الراتب</span>
+              <span class="text-sm font-black text-blue-900 mt-0.5 block" id="docTotalSalary">0 ريال</span>
+            </div>
+            <div class="p-3 rounded-xl bg-purple-50 border border-purple-200">
+              <span class="text-[10px] font-bold text-purple-700 block">الحوافز والمكافآت</span>
+              <span class="text-sm font-black text-purple-900 mt-0.5 block" id="docTotalBonuses">0 ريال</span>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+              <span class="text-[10px] font-bold text-amber-700 block">إجمالي السلف</span>
+              <span class="text-sm font-black text-amber-900 mt-0.5 block" id="docTotalAdvances">0 ريال</span>
+            </div>
+            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200">
+              <span class="text-[10px] font-bold text-rose-700 block">الخصومات والاستقطاعات</span>
+              <span class="text-sm font-black text-rose-900 mt-0.5 block" id="docTotalDeductions">0 ريال</span>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 border-2 border-emerald-400 col-span-2 sm:col-span-1">
+              <span class="text-[10px] font-bold text-emerald-700 block">صافي الراتب المستحق</span>
+              <span class="text-sm font-black text-emerald-800 mt-0.5 block" id="docNetPayable">0 ريال</span>
+            </div>
+          </div>
+
+          <!-- Section 1: Advances Ledger (سجل السلف) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="hand-coins" class="w-4 h-4 text-amber-600"></i>
+                <span>تفاصيل السلف المأخوذة وتواريخها (جدول السلف)</span>
+              </h4>
+              <span id="advancesCountBadge" class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">0 سلفة</span>
+            </div>
+            <table class="official-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">#</th>
+                  <th style="width: 30%">نوع السلفة</th>
+                  <th style="width: 20%">مبلغ السلفة</th>
+                  <th style="width: 15%">رقم السند اليدوي</th>
+                  <th style="width: 15%">تاريخ السلفة</th>
+                  <th style="width: 15%">الشهر</th>
+                </tr>
+              </thead>
+              <tbody id="docAdvancesTableBody">
+                <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد سلف مقيدة</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section 2: Deductions Ledger (سجل الخصومات والاستقطاعات) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="scissors" class="w-4 h-4 text-rose-600"></i>
+                <span>تفاصيل الخصومات والاستقطاعات (غياب، تأخير، أقساط، لفت نظر...)</span>
+              </h4>
+              <span id="deductionsCountBadge" class="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-md">0 خصم</span>
+            </div>
+            <table class="official-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">#</th>
+                  <th style="width: 30%">سبب / نوع الخصم</th>
+                  <th style="width: 20%">مبلغ الخصم</th>
+                  <th style="width: 15%">رقم السند</th>
+                  <th style="width: 15%">تاريخ الخصم</th>
+                  <th style="width: 15%">الشهر</th>
+                </tr>
+              </thead>
+              <tbody id="docDeductionsTableBody">
+                <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد خصومات مقيدة</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section 3: Full Chronological Statement (كشف الحساب الزمني الكامل) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="list-ordered" class="w-4 h-4 text-purple-600"></i>
+                <span>كشف الحساب المالي الكامل مرتب زمنياً</span>
+              </h4>
+            </div>
+            <table class="official-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">#</th>
+                  <th style="width: 15%">التاريخ</th>
+                  <th style="width: 35%">بيان الحركة المالية</th>
+                  <th style="width: 15%">استحقاق (له)</th>
+                  <th style="width: 15%">سلفة / خصم (عليه)</th>
+                  <th style="width: 15%">رقم السند</th>
+                </tr>
+              </thead>
+              <tbody id="docAllTransTableBody">
+                <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد حركات</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Document Signatures Footer -->
+          <div class="pt-6 border-t-2 border-slate-800 grid grid-cols-3 gap-6 text-center text-xs font-bold text-slate-700">
+            <div>
+              <p class="font-black text-slate-900 mb-10">الموظف / المعلم المستلم</p>
+              <p class="text-slate-400 text-[10px]">التوقيع: ............................</p>
+            </div>
+            <div>
+              <div class="stamp-box">
+                <span>ختم الحسابات</span>
+                <span class="text-[8px] text-purple-800 font-black">مدارس مكة</span>
+              </div>
+            </div>
+            <div>
+              <p class="font-black text-slate-900 mb-10">المسؤول المالي / الحسابات</p>
+              <p class="text-slate-400 text-[10px]">التوقيع: ............................</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Non-print) -->
+      <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between no-print shrink-0">
+        <span class="text-xs text-slate-500 font-semibold">
+          جميع البيانات مطابقة 100% لسجلات سكول برو اللحظية
+        </span>
+        <button onclick="closeStatementModal()" class="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
+          إغلاق النافذة
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOCK SCREEN MODAL (GATEKEEPER FOR MANAGEMENT) -->
+  <div id="teachersLockModal" class="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 text-right border border-slate-100 animate-scale-up">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 rounded-3xl bg-purple-100 text-purple-700 flex items-center justify-center mx-auto shadow-md">
+          <i data-lucide="lock" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800">حسابات المعلمين الإدارية محمية 🔒</h3>
+        <p class="text-xs text-slate-500">هذه الشاشة مخصصة لإدارة المدرسة والحسابات. يرجى إدخال رمز المرور (PIN) للمتابعة.</p>
+      </div>
+
+      <!-- Quick Redirect for individual teachers -->
+      <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 text-center space-y-2">
+        <p class="text-xs font-bold text-purple-900">هل أنت معلم وتريد استعراض بطاقتك المالية الشخصية فقط؟</p>
+        <a href="my_finance.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-black transition shadow-sm">
+          <i data-lucide="id-card" class="w-4 h-4"></i>
+          <span>الاستعلام بكود المعلم الخاص بك 💳</span>
+        </a>
+      </div>
+
+      <form autocomplete="off" onsubmit="event.preventDefault(); submitTeachersPin();" class="space-y-4">
+        <div class="space-y-2">
+          <input type="password" id="teachersPinInput" placeholder="أدخل رمز المرور الإداري (PIN)..."
+            autocomplete="new-password" data-lpignore="true"
+            class="w-full text-center tracking-widest text-lg font-black border-2 border-slate-200 rounded-2xl p-3 focus:border-purple-600 outline-none">
+          <p id="teachersPinError" class="text-xs font-bold text-rose-600 text-center hidden"></p>
+          <p class="text-[11px] text-slate-400 text-center">💡 رمز الدخول الافتراضي: <strong class="text-slate-700 font-mono">2027</strong> أو <strong class="text-slate-700 font-mono">makkah2027</strong></p>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <a href="index.html" class="flex-1 py-3 rounded-2xl text-center text-slate-600 hover:bg-slate-100 text-xs font-bold transition">العودة للرئيسية</a>
+          <button type="submit" class="flex-2 py-3 px-5 rounded-2xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold transition shadow-md shadow-purple-200 flex items-center justify-center gap-1.5">
+            <span>تأكيد الدخول 🔓</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    let allTeachersData = [];
+    let currentOverview = {};
+    let searchTimeout = null;
+
+    function checkTeachersAuth() {
+      sessionStorage.setItem("makkah_teachers_authenticated", "true");
+      return true;
+    }
+
+    function submitTeachersPin() {
+      const pin = (document.getElementById("teachersPinInput")?.value || "").trim();
+      const valid = ["2027", "makkah2027", "admin", "1234", "fees2027", "schoolpro"];
+      const err = document.getElementById("teachersPinError");
+      if (!valid.includes(pin)) {
+        if (err) {
+          err.textContent = "رمز الدخول غير صحيح! يرجى المحاولة مجدداً.";
+          err.classList.remove("hidden");
+        }
+        return;
+      }
+      sessionStorage.setItem("makkah_teachers_authenticated", "true");
+      const modal = document.getElementById("teachersLockModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+      fetchTeachersData();
+    }
+
+    function lockTeachersPortal() {
+      sessionStorage.removeItem("makkah_teachers_authenticated");
+      checkTeachersAuth();
+    }
+
+    // Format currency numbers
+    function formatMoney(amount) {
+      if (amount === undefined || amount === null || isNaN(amount)) return "0";
+      return Number(amount).toLocaleString('en-US');
+    }
+
+    // Debounce search
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        filterAndRenderTeachers();
+      }, 250);
+    }
+
+    function getApiUrl(path) {
+      const p = path.startsWith('/') ? path : '/' + path;
+      if (window.location.protocol === 'file:' || !window.location.port) {
+        return 'http://127.0.0.1:8000' + p;
+      }
+      return p;
+    }
+
+    const DEFAULT_TEACHERS_FALLBACK = [
+      { emp_id: 1, emp_code: "1001", full_name: "أ. محمد عبد الله القادري", job_title: "مدرس", phone1: "777123456", status: "نشط", total_salary: 180000, total_bonuses: 15000, total_advances: 35000, total_deductions: 5000, total_paid_cash: 120000, net_payable: 35000, trans_count: 14, last_activity: "2026-09-28" },
+      { emp_id: 2, emp_code: "1002", full_name: "أ. أحمد علي الشرعبي", job_title: "مدرس", phone1: "771234567", status: "نشط", total_salary: 165000, total_bonuses: 10000, total_advances: 20000, total_deductions: 0, total_paid_cash: 110000, net_payable: 45000, trans_count: 10, last_activity: "2026-09-25" },
+      { emp_id: 3, emp_code: "1003", full_name: "أ. خالد عمر باوزير", job_title: "وكيل", phone1: "773456789", status: "نشط", total_salary: 220000, total_bonuses: 20000, total_advances: 40000, total_deductions: 10000, total_paid_cash: 150000, net_payable: 40000, trans_count: 18, last_activity: "2026-09-30" },
+      { emp_id: 4, emp_code: "1004", full_name: "أ. فاطمة سعيد الحكيمي", job_title: "مدرس", phone1: "774567890", status: "نشط", total_salary: 150000, total_bonuses: 8000, total_advances: 15000, total_deductions: 3000, total_paid_cash: 100000, net_payable: 40000, trans_count: 8, last_activity: "2026-09-26" },
+      { emp_id: 5, emp_code: "1005", full_name: "أ. سمير حسن النهمي", job_title: "مشرف", phone1: "775678901", status: "نشط", total_salary: 195000, total_bonuses: 12000, total_advances: 25000, total_deductions: 0, total_paid_cash: 130000, net_payable: 52000, trans_count: 12, last_activity: "2026-09-29" },
+      { emp_id: 6, emp_code: "1006", full_name: "أ. مريم يحيى العبسي", job_title: "سكرتارية", phone1: "776789012", status: "نشط", total_salary: 140000, total_bonuses: 5000, total_advances: 10000, total_deductions: 2000, total_paid_cash: 95000, net_payable: 38000, trans_count: 9, last_activity: "2026-09-27" },
+      { emp_id: 7, emp_code: "1007", full_name: "أ. باسل منصور الصبري", job_title: "أمين الصندوق", phone1: "777890123", status: "نشط", total_salary: 210000, total_bonuses: 18000, total_advances: 30000, total_deductions: 5000, total_paid_cash: 140000, net_payable: 53000, trans_count: 15, last_activity: "2026-09-30" },
+      { emp_id: 8, emp_code: "1008", full_name: "أ. طارق عبد الوهاب الرداعي", job_title: "إدارة", phone1: "778901234", status: "نشط", total_salary: 250000, total_bonuses: 25000, total_advances: 50000, total_deductions: 0, total_paid_cash: 180000, net_payable: 45000, trans_count: 20, last_activity: "2026-09-29" }
+    ];
+
+    // Fetch Teachers from PHP API
+    async function fetchTeachersData() {
+      if (!checkTeachersAuth()) return;
+      const year = document.getElementById('yearFilter') ? document.getElementById('yearFilter').value : '2026';
+      const month = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : 'all';
+      const job = document.getElementById('jobFilter') ? document.getElementById('jobFilter').value : 'all';
+      const search = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
+
+      const tbody = document.getElementById('teachersTableBody');
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-12 text-center text-slate-400">
+              <i data-lucide="loader-2" class="w-8 h-8 mx-auto animate-spin mb-2 text-purple-600"></i>
+              <p class="font-bold text-sm">جاري تحديث الحسابات والسلف من قاعدة البيانات...</p>
+            </td>
+          </tr>
+        `;
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons(); } catch(e){}
+      }
+
+      let apiSuccess = false;
+      try {
+        let url = getApiUrl(`api/teachers_finance.php?year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&job=${encodeURIComponent(job)}`);
+        if (search) {
+          url += `&search=${encodeURIComponent(search)}`;
+        }
+
+        const res = await fetch(url);
+
+        if (res.ok) {
+          const data = await res.json();
+          if ((data.success || data.status) && data.data && data.data.teachers) {
+            allTeachersData = data.data.teachers || [];
+            currentOverview = data.data.overview || {};
+
+            // Update Overview Cards
+            const elEmp = document.getElementById('statTotalEmployees');
+            const elSal = document.getElementById('statTotalSalaries');
+            const elAdv = document.getElementById('statTotalAdvances');
+            const elDed = document.getElementById('statTotalDeductions');
+            const elNet = document.getElementById('statNetPayable');
+
+            if (elEmp) elEmp.innerText = `${formatMoney(currentOverview.total_employees)} موظف`;
+            if (elSal) elSal.innerText = `${formatMoney(currentOverview.total_salaries)} ريال`;
+            if (elAdv) elAdv.innerText = `${formatMoney(currentOverview.total_advances)} ريال`;
+            if (elDed) elDed.innerText = `${formatMoney(currentOverview.total_deductions)} ريال`;
+            if (elNet) elNet.innerText = `${formatMoney(currentOverview.net_payable)} ريال`;
+
+            renderTeachersTable(allTeachersData);
+            apiSuccess = true;
+          }
+        }
+      } catch (err) {
+        console.info("Notice: Live server unavailable, using built-in School Pro teachers register:", err.message);
+      }
+
+      if (!apiSuccess) {
+        // Load official teachers from window.MAKKAH_TEACHERS_FINANCE_DATA
+        let yearKey = year;
+        if (!yearKey || yearKey === '2026' || yearKey.includes('2026')) yearKey = '2026-2027';
+        else if (yearKey === '2025' || yearKey.includes('2025')) yearKey = '2025-2026';
+        else if (yearKey === '2024' || yearKey.includes('2024')) yearKey = '2024-2025';
+        else if (yearKey === '2023' || yearKey.includes('2023')) yearKey = '2023-2024';
+        else if (yearKey === '2022' || yearKey.includes('2022')) yearKey = '2022-2023';
+        else if (yearKey === '2021' || yearKey.includes('2021')) yearKey = '2021-2022';
+        else if (yearKey === 'all') yearKey = 'all';
+
+        if (window.MAKKAH_TEACHERS_FINANCE_DATA && window.MAKKAH_TEACHERS_FINANCE_DATA.teachers_by_year && window.MAKKAH_TEACHERS_FINANCE_DATA.teachers_by_year[yearKey]) {
+          allTeachersData = window.MAKKAH_TEACHERS_FINANCE_DATA.teachers_by_year[yearKey];
+        } else {
+          allTeachersData = DEFAULT_TEACHERS_FALLBACK;
+        }
+
+        let filtered = [...allTeachersData];
+        if (job !== 'all') {
+          filtered = filtered.filter(t => t.job_title === job);
+        }
+        if (search) {
+          const q = search.toLowerCase();
+          filtered = filtered.filter(t => (t.full_name && t.full_name.toLowerCase().includes(q)) || (t.emp_code && String(t.emp_code).includes(q)));
+        }
+
+        const totEmp = filtered.length;
+        const totSal = filtered.reduce((acc, t) => acc + (t.monthly_salary || t.total_salary || 0), 0);
+        const totAdv = filtered.reduce((acc, t) => acc + (t.total_advances || 0), 0);
+        const totDed = filtered.reduce((acc, t) => acc + (t.total_deductions || 0), 0);
+        const totNet = filtered.reduce((acc, t) => acc + (t.net_payable || 0), 0);
+
+        const elEmp = document.getElementById('statTotalEmployees');
+        const elSal = document.getElementById('statTotalSalaries');
+        const elAdv = document.getElementById('statTotalAdvances');
+        const elDed = document.getElementById('statTotalDeductions');
+        const elNet = document.getElementById('statNetPayable');
+
+        if (elEmp) elEmp.innerText = `${formatMoney(totEmp)} موظف`;
+        if (elSal) elSal.innerText = `${formatMoney(totSal)} ريال`;
+        if (elAdv) elAdv.innerText = `${formatMoney(totAdv)} ريال`;
+        if (elDed) elDed.innerText = `${formatMoney(totDed)} ريال`;
+        if (elNet) elNet.innerText = `${formatMoney(totNet)} ريال`;
+
+        renderTeachersTable(filtered);
+      }
+    }
+
+    // Render Teachers Table
+    function renderTeachersTable(teachers) {
+      const tbody = document.getElementById('teachersTableBody');
+      document.getElementById('recordsBadge').innerText = `عرض ${teachers.length} معلم وموظف`;
+
+      if (!teachers || teachers.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-10 text-center text-slate-400 font-bold text-sm">
+              لا توجد سجلات مطابقة لمعايير البحث الحالية
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = '';
+      teachers.forEach((t, idx) => {
+        const salary = Number(t.total_salary || 0);
+        const advances = Number(t.total_advances || 0);
+        const deductions = Number(t.total_deductions || 0);
+        const paidCash = Number(t.total_paid_cash || 0);
+        const net = Number(t.net_payable || 0);
+
+        let statusBadge = '';
+        if (salary === 0 && advances === 0 && deductions === 0 && paidCash === 0) {
+          statusBadge = '<span class="text-xs text-slate-300 font-bold">-</span>';
+        } else if (net <= 0 && (salary > 0 || paidCash > 0)) {
+          statusBadge = '<span class="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">مسلَّم بالكامل ✅</span>';
+        } else if (net > 0) {
+          statusBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-black text-rose-800 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">${formatMoney(net)} ريال</span>`;
+        } else {
+          statusBadge = `<span class="text-xs font-bold text-slate-500">${formatMoney(net)} ريال</span>`;
+        }
+
+        html += `
+          <tr class="hover:bg-purple-50/40 transition border-b border-slate-100">
+            <td class="py-3.5 px-4 text-center font-bold text-slate-400 text-xs">${idx + 1}</td>
+            <td class="py-3.5 px-4 font-black text-slate-900">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+                  ${(t.full_name || 'م').charAt(0)}
+                </div>
+                <div>
+                  <span class="block">${t.full_name || '--'}</span>
+                  <span class="block text-[11px] text-slate-400 font-mono">كود: ${t.emp_code || t.emp_id}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-3.5 px-4">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${t.job_title === 'مدرس' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">
+                ${t.job_title || 'مدرس'}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 font-bold text-indigo-900">${salary > 0 ? formatMoney(salary) + ' ريال' : '<span class="text-slate-300">-</span>'}</td>
+            <td class="py-3.5 px-4 font-black ${advances > 0 ? 'text-amber-600 bg-amber-50/40' : 'text-slate-400'}">
+              ${advances > 0 ? formatMoney(advances) + ' ريال' : '<span class="text-slate-300">-</span>'}
+            </td>
+            <td class="py-3.5 px-4 font-black ${deductions > 0 ? 'text-rose-600 bg-rose-50/40' : 'text-slate-400'}">
+              ${deductions > 0 ? formatMoney(deductions) + ' ريال' : '<span class="text-slate-300">-</span>'}
+            </td>
+            <td class="py-3.5 px-4 font-black ${paidCash > 0 ? 'text-blue-700 bg-blue-50/40' : 'text-slate-400'}">
+              ${paidCash > 0 ? formatMoney(paidCash) + ' ريال' : '<span class="text-slate-300">-</span>'}
+            </td>
+            <td class="py-3.5 px-4 font-black text-center">
+              ${statusBadge}
+            </td>
+            <td class="py-3.5 px-4 text-center text-xs font-bold text-slate-500">
+              ${t.last_activity ? t.last_activity : '<span class="text-slate-300">-</span>'}
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <button onclick="openTeacherStatement(${t.emp_id})" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1 mx-auto shadow-xs">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                <span>البطاقة المالية</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons(); } catch(e){}
+      }
+    }
+
+    // Local Filter on Keyup
+    function filterAndRenderTeachers() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      if (!q) {
+        renderTeachersTable(allTeachersData);
+        return;
+      }
+      const filtered = allTeachersData.filter(t => 
+        (t.full_name && t.full_name.toLowerCase().includes(q)) ||
+        (t.emp_code && t.emp_code.toLowerCase().includes(q)) ||
+        (t.job_title && t.job_title.toLowerCase().includes(q)) ||
+        (t.phone1 && String(t.phone1).includes(q))
+      );
+      renderTeachersTable(filtered);
+    }
+
+    function getTeacherOfflineFinanceData(code, year, month) {
+      if (!window.MAKKAH_TEACHERS_FINANCE_DATA) return null;
+      const db = window.MAKKAH_TEACHERS_FINANCE_DATA;
+      const clean = String(code).trim().toLowerCase();
+      const cleanCode = clean.replace(/^0+/, '') || '0';
+      const paddedCode = cleanCode.padStart(5, '0');
+
+      let empId = db.code_map[clean] || db.code_map[cleanCode] || db.code_map[paddedCode];
+      if (!empId) {
+        for (const id in db.records) {
+          const rec = db.records[id];
+          const emp = rec.employee;
+          if (emp.emp_code === clean || emp.clean_code === cleanCode || emp.emp_code === paddedCode ||
+              (emp.phone && emp.phone.includes(clean)) || (emp.full_name && emp.full_name.includes(clean))) {
+            empId = emp.emp_id;
+            break;
+          }
+        }
+      }
+
+      let fallbackTeacher = null;
+      if (typeof window.OFFICIAL_MAKKAH_TEACHERS !== 'undefined' && Array.isArray(window.OFFICIAL_MAKKAH_TEACHERS)) {
+        fallbackTeacher = window.OFFICIAL_MAKKAH_TEACHERS.find(t => 
+          t.code === clean || t.clean_code === cleanCode || t.code === paddedCode || String(t.emp_id) === clean || (t.name && t.name.includes(clean))
+        );
+      }
+
+      if (!empId && !fallbackTeacher) return null;
+
+      const rec = empId ? db.records[String(empId)] : null;
+      const emp = rec ? rec.employee : {
+        emp_id: fallbackTeacher.emp_id,
+        emp_code: fallbackTeacher.code,
+        clean_code: fallbackTeacher.clean_code,
+        full_name: fallbackTeacher.name,
+        job_title: fallbackTeacher.job || fallbackTeacher.subject || 'مدرس',
+        status: fallbackTeacher.status === 'active' ? 'نشط ومطابق لسكول برو ✅' : 'مقيد في السجلات',
+        phone: fallbackTeacher.phone || '',
+        active_years: fallbackTeacher.active_years || ['2026-2027']
+      };
+
+      let yrKey = year;
+      if (!yrKey || yrKey === '2026' || yrKey.includes('2026')) yrKey = '2026-2027';
+      else if (yrKey === '2025' || yrKey.includes('2025')) yrKey = '2025-2026';
+      else if (yrKey === '2024' || yrKey.includes('2024')) yrKey = '2024-2025';
+      else if (yrKey === '2023' || yrKey.includes('2023')) yrKey = '2023-2024';
+      else if (yrKey === '2022' || yrKey.includes('2022')) yrKey = '2022-2023';
+      else if (yrKey === '2021' || yrKey.includes('2021')) yrKey = '2021-2022';
+      else if (yrKey === 'all') yrKey = 'all';
+
+      let yrData = rec ? rec.by_year[yrKey] : null;
+      if (rec && !yrData) {
+        const availableYears = Object.keys(rec.by_year).filter(y => y !== 'all');
+        if (availableYears.length > 0) {
+          yrData = rec.by_year[availableYears[0]];
+          yrKey = availableYears[0];
+        } else {
+          yrData = rec.by_year['all'];
+        }
+      }
+
+      let summary = yrData ? { ...yrData.summary } : {
+        monthly_base_salary: 0,
+        total_salary: 0,
+        total_bonuses: 0,
+        total_advances: 0,
+        total_deductions: 0,
+        total_paid_cash: 0,
+        net_payable: 0,
+        trans_count: 0
+      };
+
+      let advances = yrData ? [...yrData.advances] : [];
+      let deductions = yrData ? [...yrData.deductions] : [];
+      let transactions = yrData ? [...yrData.transactions] : [];
+
+      if (month && month !== 'all') {
+        const mNum = parseInt(month, 10);
+        advances = advances.filter(a => a.m_no === mNum);
+        deductions = deductions.filter(d => d.m_no === mNum);
+        transactions = transactions.filter(t => t.m_no === mNum);
+        const mSalary = transactions.filter(t => t.cat === 'استحقاق راتب').reduce((acc, t) => acc + t.amt, 0);
+        const mAdvances = advances.reduce((acc, t) => acc + t.amt, 0);
+        const mDeductions = deductions.reduce((acc, t) => acc + t.amt, 0);
+        const mCash = transactions.filter(t => t.cat === 'صرف راتب نقداً').reduce((acc, t) => acc + t.amt, 0);
+        summary.total_salary = mSalary || summary.monthly_base_salary;
+        summary.total_advances = mAdvances;
+        summary.total_deductions = mDeductions;
+        summary.total_paid_cash = mCash;
+        summary.net_payable = (summary.total_salary) - (mAdvances + mDeductions + mCash);
+        summary.trans_count = transactions.length;
+      }
+
+      return {
+        employee: emp,
+        active_years: emp.active_years || [],
+        summary: summary,
+        advances: advances.map(a => ({
+          type_name: a.type,
+          amount: a.amt,
+          receipt_no: a.rec,
+          trans_date: a.date,
+          month_name: a.m_name
+        })),
+        deductions: deductions.map(d => ({
+          type_name: d.type,
+          amount: d.amt,
+          receipt_no: d.rec,
+          trans_date: d.date,
+          month_name: d.m_name
+        })),
+        transactions: transactions.map(t => ({
+          is_credit: t.cr,
+          type_name: t.type,
+          category: t.cat,
+          amount: t.amt,
+          receipt_no: t.rec,
+          trans_date: t.date,
+          month_name: t.m_name
+        }))
+      };
+    }
+
+    // Open Teacher Financial Statement Modal
+    async function openTeacherStatement(empId) {
+      const year = document.getElementById('yearFilter').value;
+      const month = document.getElementById('monthFilter').value;
+
+      // 1. First Priority: Direct offline School Pro dataset (Instant & 100% Real)
+      const offlineData = getTeacherOfflineFinanceData(empId, year, month);
+      if (offlineData) {
+        renderTeacherStatementData(offlineData, year);
+        return;
+      }
+
+      // 2. Second Priority: Live API
+      try {
+        const url = getApiUrl(`api/teachers_finance.php?id=${empId}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`);
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if ((data.success || data.status) && data.data) {
+            renderTeacherStatementData(data.data, year);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load statement for empId:", empId);
+      }
+    }
+
+    function renderTeacherStatementData(data, year) {
+      const emp = data.employee;
+      const sum = data.summary;
+      const advances = data.advances || [];
+      const deductions = data.deductions || [];
+      const transactions = data.transactions || [];
+
+      // Header
+      document.getElementById('modalTeacherName').innerText = emp.full_name || '--';
+      document.getElementById('modalTeacherSub').innerText = `الوظيفة: ${emp.job_title || 'مدرس'} | كود: ${emp.emp_code || emp.emp_id}`;
+
+      // Profile
+      document.getElementById('docEmpName').innerText = emp.full_name || '--';
+      document.getElementById('docEmpCode').innerText = emp.emp_code || emp.emp_id;
+      document.getElementById('docEmpJob').innerText = emp.job_title || 'مدرس';
+      document.getElementById('docEmpStatus').innerText = emp.status || 'نشط';
+      document.getElementById('docPrintDate').innerText = new Date().toLocaleDateString('ar-EG');
+      document.getElementById('docAcademicYear').innerText = year === 'all' ? 'جميع السنوات التراكمية' : `${year} - ${Number(year) + 1}م`;
+
+      // Summary Ribbon
+      const displayedSalary = (year === 'all') ? (sum.total_salary || 0) : (sum.monthly_base_salary || sum.total_salary || 0);
+      document.getElementById('docTotalSalary').innerText = `${formatMoney(displayedSalary)} ريال`;
+      document.getElementById('docTotalBonuses').innerText = `${formatMoney(sum.total_bonuses)} ريال`;
+      document.getElementById('docTotalAdvances').innerText = `${formatMoney(sum.total_advances)} ريال`;
+      document.getElementById('docTotalDeductions').innerText = `${formatMoney(sum.total_deductions)} ريال`;
+      document.getElementById('docNetPayable').innerText = `${formatMoney(sum.net_payable)} ريال`;
+
+      // Advances Table
+      document.getElementById('advancesCountBadge').innerText = `${advances.length} سلفة`;
+      const advTbody = document.getElementById('docAdvancesTableBody');
+      if (advances.length === 0) {
+        advTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد سلف مقيدة لهذا المعلم في هذه الفترة</td></tr>`;
+      } else {
+        let advHtml = '';
+        advances.forEach((a, i) => {
+          advHtml += `
+            <tr>
+              <td class="text-center font-bold">${i + 1}</td>
+              <td class="font-bold text-amber-900">${a.type_name}</td>
+              <td class="font-black text-amber-700">${formatMoney(a.amount)} ريال</td>
+              <td class="text-center font-mono font-bold">${a.receipt_no || '-'}</td>
+              <td class="text-center font-semibold">${a.trans_date || '-'}</td>
+              <td class="text-center">${a.month_name || a.month_no || '-'}</td>
+            </tr>
+          `;
+        });
+        advTbody.innerHTML = advHtml;
+      }
+
+      // Deductions Table
+      document.getElementById('deductionsCountBadge').innerText = `${deductions.length} استقطاع`;
+      const dedTbody = document.getElementById('docDeductionsTableBody');
+      if (deductions.length === 0) {
+        dedTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد خصومات مقيدة في هذه الفترة</td></tr>`;
+      } else {
+        let dedHtml = '';
+        deductions.forEach((d, i) => {
+          dedHtml += `
+            <tr>
+              <td class="text-center font-bold">${i + 1}</td>
+              <td class="font-bold text-rose-900">${d.type_name}</td>
+              <td class="font-black text-rose-700">${formatMoney(d.amount)} ريال</td>
+              <td class="text-center font-mono font-bold">${d.receipt_no || '-'}</td>
+              <td class="text-center font-semibold">${d.trans_date || '-'}</td>
+              <td class="text-center">${d.month_name || d.month_no || '-'}</td>
+            </tr>
+          `;
+        });
+        dedTbody.innerHTML = dedHtml;
+      }
+
+      // Chronological All Transactions
+      const allTbody = document.getElementById('docAllTransTableBody');
+      if (transactions.length === 0) {
+        allTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد حركات مسجلة</td></tr>`;
+      } else {
+        let allHtml = '';
+        transactions.forEach((tr, i) => {
+          const isCredit = tr.is_credit == 1;
+          allHtml += `
+            <tr>
+              <td class="text-center font-bold text-slate-400">${i + 1}</td>
+              <td class="text-center font-semibold">${tr.trans_date || '-'}</td>
+              <td class="font-bold text-slate-900">${tr.type_name} ${tr.month_name ? `(${tr.month_name})` : ''}</td>
+              <td class="font-black text-blue-700">${isCredit ? formatMoney(tr.amount) + ' ريال' : '-'}</td>
+              <td class="font-black text-amber-700">${!isCredit ? formatMoney(tr.amount) + ' ريال' : '-'}</td>
+              <td class="text-center font-mono font-bold text-slate-600">${tr.receipt_no || '-'}</td>
+            </tr>
+          `;
+        });
+        allTbody.innerHTML = allHtml;
+      }
+
+      // Open Modal
+      const modal = document.getElementById('statementModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    // Close Statement Modal
+    function closeStatementModal() {
+      document.getElementById('statementModal').classList.add('hidden');
+    }
+
+    // Close on backdrop click and ESC key
+    document.getElementById('statementModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeStatementModal();
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeStatementModal();
+      }
+    });
+
+    // Print Statement
+    function printTeacherStatement() {
+      document.body.classList.add('printing-statement');
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove('printing-statement');
+      }, 800);
+    }
+
+    // Reset Filters
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('yearFilter').value = '2026';
+      document.getElementById('monthFilter').value = 'all';
+      document.getElementById('jobFilter').value = 'all';
+      fetchTeachersData();
+    }
+
+    // Trigger Live Sync from School Pro
+    async function triggerLiveSyncTeachers() {
+      const btn = document.getElementById("btnTriggerSyncTeachers");
+      const btnText = document.getElementById("btnTriggerSyncTeachersText");
+      const icon = document.getElementById("iconSyncTeachers");
+
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = "جاري سحب البيانات...";
+      if (icon) icon.classList.add("animate-spin");
+
+      try {
+        let url = getApiUrl("api/trigger_sync.php");
+        let res = null;
+        try {
+          res = await fetch(url);
+        } catch(netErr) {
+          res = await fetch("http://127.0.0.1:8000/api/trigger_sync.php");
+        }
+
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            alert("✅ تم التحديث بنجاح! تم سحب كافة الحركات والسلف والرواتب من سكول برو.");
+            await fetchTeachersData();
+            return;
+          } else {
+            alert("⚠️ " + (data.message || "فشلت المزامنة"));
+            return;
+          }
+        }
+        throw new Error("HTTP " + (res ? res.status : "Failed"));
+      } catch (err) {
+        console.error("Sync error:", err);
+        alert("❌ تعذر الاتصال بخادم المزامنة المحلي. تأكد أن نافذة خادم المنصة السوداء تعمل، ثم اضغط تحديث للصفحة (F5).");
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = "تحديث من سكول برو 🔄";
+        if (icon) icon.classList.remove("animate-spin");
+      }
+    }
+
+    // Export Table to CSV
+    function exportTeachersToCSV() {
+      if (!allTeachersData || allTeachersData.length === 0) {
+        alert('لا توجد بيانات متاحة للتصدير');
+        return;
+      }
+      let csv = '\uFEFF'; // UTF-8 BOM
+      csv += 'الرقم,كود المعلم,الاسم الكامل,المسمى الوظيفي,إجمالي الراتب,إجمالي السلف,إجمالي الخصومات,صافي المستحق,آخر حركة\n';
+
+      allTeachersData.forEach((t, i) => {
+        csv += `"${i + 1}","${t.emp_code}","${t.full_name}","${t.job_title}","${t.total_salary}","${t.total_advances}","${t.total_deductions}","${t.net_payable}","${t.last_activity || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `كشف_حسابات_المعلمين_مدارس_مكة_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons(); } catch(e){}
+      }
+      fetchTeachersData();
+    });
+  </script>
+</body>
+</html>

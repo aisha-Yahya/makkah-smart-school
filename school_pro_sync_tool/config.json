@@ -1,0 +1,10 @@
+{
+  "mdf_path": "D:\\Friends Soft2\\School Pro\\DB\\sdb.mdf",
+  "server": ".\\SQLEXPRESS",
+  "sqlite_path": "C:\\Users\\LENOVO\\Desktop\\makkah-smart-school\\api\\data\\school_pro_synced.sqlite",
+  "student_limit": "الكل (All)",
+  "api_url": "http://127.0.0.1:8000/api/sync.php",
+  "api_key": "makkah_sync_secret_2027",
+  "batch_size": "50",
+  "last_sync_time": "2026-09-30 06:26 PM"
+}

@@ -1,0 +1,23 @@
+# Dependencies & Environments
+node_modules/
+__pycache__/
+*.pyc
+
+# Binaries & Executables
+*.exe
+php/
+
+# Backup & Temporary files
+*.bak*
+*.log
+scratch/
+.system_generated/
+
+# PyInstaller Build Artifacts
+school_pro_sync_tool/build/
+school_pro_sync_tool/dist/
+*.spec.bak
+
+# Duplicate & Redundant Dumps
+offline_school_pro_data.js
+api/data/*backup*.sqlite

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>كشف الرسوم المالية والحسابات - مدارس مكة الأهلية الحديثة</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Offline School Pro Database -->
+  <script src="makkah_fees_data.js"></script>
+  <style>
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fc 50%, #f8fafc 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.08);
+    }
+    .official-doc-sheet {
+      border: 3px double #1e3a8a;
+      border-radius: 12px;
+      padding: 24px;
+      background: #ffffff;
+      color: #0f172a;
+      position: relative;
+    }
+    .official-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .official-table th, .official-table td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+    }
+    .official-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .stamp-box {
+      width: 95px;
+      height: 95px;
+      border: 2px dashed #94a3b8;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 9px;
+      color: #64748b;
+      font-weight: bold;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      body.printing-student-statement #statementModal {
+        position: static !important;
+        background: none !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      body.printing-student-statement #statementModal > div {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      body.printing-student-statement main,
+      body.printing-student-statement header,
+      body.printing-student-statement #feesLockModal,
+      body.printing-student-statement .statement-modal-actions,
+      body.printing-student-statement #printableRosterArea {
+        display: none !important;
+      }
+      body.printing-roster main,
+      body.printing-roster header,
+      body.printing-roster #statementModal,
+      body.printing-roster #feesLockModal {
+        display: none !important;
+      }
+      body.printing-roster #printableRosterArea {
+        display: block !important;
+        position: static !important;
+      }
+      .official-doc-sheet {
+        border: 2px solid #0f172a !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        padding: 16px !important;
+      }
+      .official-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      .official-table th, .official-table td {
+        border: 1px solid #1e293b !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <!-- Local File Protocol Smart Notice -->
+  <div id="fileProtocolNotice" class="hidden bg-gradient-to-r from-sky-100 via-blue-50 to-indigo-50 border-b border-sky-300 px-4 py-2.5 text-xs font-bold text-sky-950 flex flex-wrap items-center justify-between gap-2 shadow-xs no-print">
+    <div class="flex items-center gap-2">
+      <span class="p-1 rounded-lg bg-sky-200 text-sky-800">💡</span>
+      <span>أنت تفتح الصفحة كملف محلي. للاستفادة الكاملة من سرعة الخادم وتحديثات سكول برو:</span>
+      <a href="http://127.0.0.1:8000/fees.html" class="underline text-blue-700 hover:text-blue-900 font-black px-2.5 py-1 rounded-lg bg-white border border-blue-200 shadow-xs">افتح المنصة عبر رابط الخادم المباشر (http://127.0.0.1:8000/fees.html) 🚀</a>
+    </div>
+    <button onclick="document.getElementById('fileProtocolNotice').remove()" class="text-slate-400 hover:text-slate-700 p-1 text-sm font-bold">&times;</button>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-sky-100 shadow-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-brand-600 text-white flex items-center justify-center font-black shadow-md hover:scale-105 transition" title="العودة للرئيسية">
+          <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-black text-slate-900 leading-tight">مدارس مكة الأهلية الحديثة</h1>
+            <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>سكول برو المالي</span>
+            </span>
+          </div>
+          <p class="text-xs text-sky-600 font-medium">إدارة الرسوم والحسابات وسندات القبض المدرسية</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="liveSyncStatus" class="hidden sm:inline-flex text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+          جاري فحص الاتصال...
+        </span>
+        <button id="btnTriggerSync" onclick="triggerLiveSyncFromSchoolPro()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="سحب وتحديث السندات والبيانات من سكول برو اللحظي الآن">
+          <i data-lucide="refresh-cw" class="w-4 h-4" id="iconSyncSpinner"></i>
+          <span id="btnTriggerSyncText">تحديث من سكول برو 🔄</span>
+        </button>
+        <button onclick="exportTableToCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>تصدير Excel 📊</span>
+        </button>
+        <button onclick="lockFeesPortal()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs" title="قفل الحسابات">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>قفل 🔒</span>
+        </button>
+        <a href="teachers_finance.html" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="البطاقة المالية للمعلمين">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">مالية المعلمين 💼</span>
+        </a>
+        <a href="index.html" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="home" class="w-4 h-4"></i>
+          <span>المنصة الرئيسية</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Overview Financial Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="glass-card rounded-3xl p-5 border border-sky-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي الطلاب المسجلين</span>
+          <span class="text-xl font-black text-slate-900 mt-0.5 block" id="statTotalStudents">1,137 طالب</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-blue-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+          <i data-lucide="calculator" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي الرسوم المقررة</span>
+          <span class="text-xl font-black text-blue-700 mt-0.5 block" id="statTotalFees">250,345,730 ريال</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-emerald-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">إجمالي المبالغ المسددة</span>
+          <span class="text-xl font-black text-emerald-600 mt-0.5 block" id="statTotalPaid">232,163,760 ريال</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-5 border border-rose-100 shadow-xs flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center">
+          <i data-lucide="alert-circle" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-slate-400 block">المتبقي المطلوب تحصيله</span>
+          <span class="text-xl font-black text-rose-600 mt-0.5 block" id="statTotalRemaining">18,181,970 ريال</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="glass-card rounded-3xl p-5 border border-slate-200 shadow-xs no-print">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Search Input -->
+        <div class="relative w-full md:w-96">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
+          <input type="text" id="searchInput" oninput="debounceSearch()" placeholder="ابحث باسم الطالب أو رقم القيد..."
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" name="student_search_filter_box"
+            class="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-slate-300 text-xs font-bold focus:ring-2 focus:ring-sky-500 outline-none bg-slate-50 focus:bg-white transition">
+          <button id="clearSearchBtn" onclick="clearSearchInput()" class="hidden absolute left-3 top-2.5 text-slate-400 hover:text-slate-700 p-0.5 rounded-full hover:bg-slate-200 transition" title="مسح البحث">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Filter Selects -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          
+          <!-- Academic Year Filter -->
+          <div class="flex items-center gap-1.5">
+            <label class="text-xs font-bold text-slate-500">العام الدراسي:</label>
+            <select id="yearFilter" onchange="onYearFilterChanged()" class="text-xs font-black p-2.5 rounded-xl border border-sky-300 bg-sky-50 text-sky-950 focus:ring-2 focus:ring-sky-500 outline-none shadow-xs">
+              <option value="2026-2027" selected>2026 - 2027م (العام الحالي)</option>
+              <option value="2025-2026">2025 - 2026م</option>
+              <option value="2024-2025">2024 - 2025م</option>
+              <option value="2023-2024">2023 - 2024م</option>
+              <option value="2022-2023">2022 - 2023م</option>
+              <option value="2021-2022">2021 - 2022م</option>
+              <option value="2020-2021">2020 - 2021م</option>
+              <option value="all">🌟 جميع السنوات التراكمية</option>
+            </select>
+          </div>
+
+          <!-- Class Filter -->
+          <div class="flex items-center gap-1.5">
+            <label class="text-xs font-bold text-slate-500">الصف:</label>
+            <select id="classFilter" onchange="loadStudents()" class="text-xs font-bold p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-sky-500 outline-none">
+              <option value="">جميع الصفوف الدراسية</option>
+              <option value="الأول">الأول</option>
+              <option value="الثاني">الثاني</option>
+              <option value="الثالث">الثالث</option>
+              <option value="الرابع">الرابع</option>
+              <option value="الخامس">الخامس</option>
+              <option value="السادس">السادس</option>
+              <option value="السابع">السابع</option>
+              <option value="الثامن">الثامن</option>
+              <option value="التاسع">التاسع</option>
+            </select>
+          </div>
+
+          <!-- Payment Status Filter -->
+          <div class="flex items-center gap-1.5">
+            <label class="text-xs font-bold text-slate-500">حالة السداد:</label>
+            <select id="statusFilter" onchange="filterLocalRows()" class="text-xs font-bold p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-sky-500 outline-none">
+              <option value="all">جميع الحالات</option>
+              <option value="paid">خالص الرسوم (مسدد بالكامل)</option>
+              <option value="due">متبقي عليه رسوم</option>
+            </select>
+          </div>
+
+          <button onclick="onYearFilterChanged()" class="px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold border border-sky-200 transition flex items-center gap-1">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>تحديث</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Students Accounts Table -->
+    <div class="glass-card rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="table" class="w-4 h-4 text-sky-600"></i>
+          <span class="text-xs font-black text-slate-800">قائمة حسابات الطلاب (<span id="tableCountBadge">0</span> طالب)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printCurrentRoster()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="طباعة كشف الحسابات الجماعي الرسمي">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>طباعة القائمة 🖨️</span>
+          </button>
+          <span class="text-[11px] text-slate-400 hidden sm:inline">انقر على أي طالب لعرض كشف حسابه وسندات القبض التفصيلية</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-slate-100/70 border-b border-slate-200 text-slate-700 font-black">
+            <tr>
+              <th class="p-3.5 text-center">م</th>
+              <th class="p-3.5">رقم القيد</th>
+              <th class="p-3.5">اسم الطالب</th>
+              <th class="p-3.5">الصف والفرع</th>
+              <th class="p-3.5 text-left" id="thTotalFees">إجمالي الرسوم</th>
+              <th class="p-3.5 text-left" id="thTotalPaid">المسدد</th>
+              <th class="p-3.5 text-left" id="thTotalRemaining">المتبقي</th>
+              <th class="p-3.5 text-center">حالة السداد</th>
+              <th class="p-3.5 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTableBody" class="divide-y divide-slate-100 text-slate-700">
+            <tr><td colspan="9" class="p-8 text-center text-slate-400">جاري تحميل كشوفات الرسوم والحسابات...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="p-4 bg-slate-50/60 border-t border-slate-200 flex items-center justify-between no-print">
+        <span class="text-xs text-slate-500" id="paginationInfo">عرض 1 إلى 50</span>
+        <div class="flex items-center gap-2">
+          <button id="prevBtn" onclick="changePage(-1)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold disabled:opacity-40">السابق</button>
+          <span id="pageBadge" class="text-xs font-bold text-slate-700">صفحة 1</span>
+          <button id="nextBtn" onclick="changePage(1)" class="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold disabled:opacity-40">التالي</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: DETAILED STUDENT FINANCIAL STATEMENT -->
+  <div id="statementModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[95vh] overflow-y-auto p-4 sm:p-7 shadow-2xl space-y-4">
+      
+      <!-- Modal Top Action Bar (no-print) -->
+      <div class="statement-modal-actions flex items-center justify-between pb-3 border-b border-slate-200 no-print">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-black text-slate-800">معاينة كشف الحساب المالي الرسمي (A4)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printCurrentStatement()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-200">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>طباعة كشف الحساب الرسمي 🖨️</span>
+          </button>
+          <button onclick="closeStatementModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition" title="إغلاق">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Year Filter Tabs (no-print) -->
+      <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-sky-50/80 border border-sky-200 rounded-2xl no-print text-xs">
+        <div class="flex items-center gap-1.5 font-bold text-sky-950">
+          <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
+          <span>تحديد السنة الدراسية للكشف:</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-1" id="modalYearTabs">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- THE OFFICIAL PRINTABLE DOCUMENT SHEET -->
+      <div id="officialStudentDocSheet" class="official-doc-sheet text-right">
+        
+        <!-- Official Three-Column Header with Logo -->
+        <div class="border-b-2 border-slate-900 pb-3 mb-4">
+          <div class="flex items-center justify-between gap-2">
+            <!-- Right: Ministry and School Hierarchy -->
+            <div class="text-right text-[11px] leading-relaxed text-slate-800 font-bold space-y-0.5">
+              <p>الجمهورية اليمنية</p>
+              <p>وزارة التربية والتعليم</p>
+              <p>مكتب التربية والتعليم - محافظة إب</p>
+              <p class="font-black text-xs text-blue-950">مدارس مكة الأهلية الحديثة</p>
+              <p class="text-[10px] text-slate-500 font-medium">معاً لتحسين التعليم • فرع قحزة</p>
+            </div>
+
+            <!-- Center: School Logo & Document Title -->
+            <div class="text-center space-y-1">
+              <img src="school_logo.jpg" alt="شعار مدارس مكة" class="h-16 w-16 object-contain mx-auto rounded-xl p-0.5 border border-slate-200 shadow-xs" onerror="this.src='logo.png'">
+              <h2 class="text-sm sm:text-base font-black text-slate-900 tracking-wide mt-1">كشف حساب مالي ورسوم دراسية</h2>
+              <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
+                <span id="mDocYear">العام الدراسي: 2026-2027م</span>
+              </div>
+            </div>
+
+            <!-- Left: Document Reference & Timestamp -->
+            <div class="text-left text-[11px] leading-relaxed text-slate-700 font-mono space-y-0.5">
+              <p class="font-bold">رقم الكشف: <span id="mDocRef" class="text-slate-900 font-black">REF-SP-0429</span></p>
+              <p class="font-bold">التاريخ: <span id="mDocDate" class="text-slate-800 font-black">-</span></p>
+              <p class="font-bold">الوقت: <span id="mDocTime" class="text-slate-800 font-black">-</span></p>
+              <div class="mt-1">
+                <span id="mOfficialStatusBadge" class="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black bg-slate-100 text-slate-800 border">
+                  حالة الحساب
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Profile Box -->
+        <div class="bg-slate-50/80 rounded-xl p-3 border border-slate-200 mb-4 text-xs">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <span class="text-slate-500 text-[10px] block font-bold">اسم الطالب الرباعي:</span>
+              <span id="mOfficialStudentName" class="font-black text-slate-900 text-sm block mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[10px] block font-bold">رقم القيد المدرسي:</span>
+              <span id="mOfficialStudentCode" class="font-mono font-black text-slate-900 text-sm block mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[10px] block font-bold">الصف والشعبة:</span>
+              <span id="mOfficialStudentClass" class="font-black text-slate-900 text-sm block mt-0.5">-</span>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[10px] block font-bold">ولي الأمر / الهاتف:</span>
+              <span id="mOfficialGuardian" class="font-bold text-slate-800 text-xs block mt-0.5">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Balances Cards Box -->
+        <div class="grid grid-cols-3 gap-3 mb-4 text-center">
+          <div class="p-3 rounded-xl border border-blue-200 bg-blue-50/50">
+            <span class="text-[11px] font-bold text-blue-800 block" id="mOfficialTotalFeesTitle">إجمالي الرسوم المقررة</span>
+            <span id="mOfficialTotalFees" class="text-base sm:text-lg font-black text-blue-950 mt-1 block">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50">
+            <span class="text-[11px] font-bold text-emerald-800 block" id="mOfficialTotalPaidTitle">إجمالي المسدد (المقبوضات)</span>
+            <span id="mOfficialTotalPaid" class="text-base sm:text-lg font-black text-emerald-700 mt-1 block">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl border border-rose-200 bg-rose-50/50">
+            <span class="text-[11px] font-bold text-rose-800 block" id="mOfficialRemainingTitle">المتبقي المطلوب سداده</span>
+            <span id="mOfficialRemaining" class="text-base sm:text-lg font-black text-rose-700 mt-1 block">0 ريال</span>
+          </div>
+        </div>
+
+        <!-- Receipts & Transactions Ledger Table -->
+        <div class="mb-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+              <span>تفاصيل سندات القبض ورسوم الأقساط المسجلة في سكول برو:</span>
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">العملة: ريال يمني (YER)</span>
+          </div>
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 35px; text-align: center;">م</th>
+                <th style="width: 80px; text-align: center;">رقم السند</th>
+                <th style="width: 85px; text-align: center;">تاريخ السند</th>
+                <th style="width: 85px; text-align: center;">العام الدراسي</th>
+                <th style="width: 90px; text-align: center;">نوع الحركة</th>
+                <th>بند الرسوم</th>
+                <th style="width: 110px; text-align: left;">المبلغ (ريال)</th>
+                <th>ملاحظات السداد</th>
+              </tr>
+            </thead>
+            <tbody id="mTransactionsBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Official Signatures & Stamp Footer -->
+        <div class="pt-5 border-t-2 border-slate-800 grid grid-cols-4 gap-3 text-center text-xs mt-6">
+          <div>
+            <p class="font-bold text-slate-700 text-[11px] mb-8">أمين الصندوق / المحاسب</p>
+            <p class="border-b border-dotted border-slate-400 pb-1 font-mono text-[10px]">....................................</p>
+          </div>
+          <div>
+            <p class="font-bold text-slate-700 text-[11px] mb-8">الشؤون المالية والحسابات</p>
+            <p class="border-b border-dotted border-slate-400 pb-1 font-mono text-[10px]">....................................</p>
+          </div>
+          <div>
+            <p class="font-bold text-slate-700 text-[11px] mb-1">الختم الرسمي للمدرسة</p>
+            <div class="stamp-box mt-1">
+              <span>ختم الإدارة<br>والشؤون المالية</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-bold text-slate-700 text-[11px] mb-1">مدير المـدرســة</p>
+            <p class="font-black text-xs text-slate-900 mt-1">أ. يحيى علي الزقري</p>
+            <p class="border-b border-dotted border-slate-400 pb-1 font-mono text-[10px] mt-6">....................................</p>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-2 border-t border-slate-200 text-center text-[9px] text-slate-400 font-mono">
+          نظام الإدارة المدرسية والمالية سكول برو (School Pro Live) • مدارس مكة الأهلية الحديثة • هاتف: 770467894 - 777222938
+        </div>
+      </div>
+
+      <div class="statement-modal-actions pt-2 flex justify-end no-print">
+        <button onclick="closeStatementModal()" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800">
+          إغلاق النافذة
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRINTABLE ROSTER CONTAINER (Used when printing whole list) -->
+  <div id="printableRosterArea" class="hidden">
+    <div class="official-doc-sheet text-right">
+      <div class="border-b-2 border-slate-900 pb-3 mb-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-right text-[11px] leading-relaxed text-slate-800 font-bold space-y-0.5">
+            <p>الجمهورية اليمنية</p>
+            <p>وزارة التربية والتعليم</p>
+            <p>مكتب التربية والتعليم - محافظة إب</p>
+            <p class="font-black text-xs text-blue-950">مدارس مكة الأهلية الحديثة</p>
+          </div>
+          <div class="text-center space-y-1">
+            <img src="school_logo.jpg" alt="شعار مدارس مكة" class="h-14 w-14 object-contain mx-auto" onerror="this.src='logo.png'">
+            <h2 class="text-sm font-black text-slate-900">كشف إجمالي حسابات ورسوم الطلاب</h2>
+            <p class="text-[10px] text-slate-600 font-bold" id="rosterFilterSummary">جميع الصفوف الدراسية</p>
+          </div>
+          <div class="text-left text-[11px] leading-relaxed text-slate-700 font-mono space-y-0.5">
+            <p class="font-bold">العام: 2026-2027م</p>
+            <p class="font-bold">التاريخ: <span id="rosterDate">-</span></p>
+            <p class="font-bold">العدد: <span id="rosterCount">-</span> طالب</p>
+          </div>
+        </div>
+      </div>
+
+      <table class="official-table mb-4">
+        <thead>
+          <tr>
+            <th style="width: 30px; text-align: center;">م</th>
+            <th style="width: 75px;">رقم القيد</th>
+            <th>اسم الطالب</th>
+            <th style="width: 85px;">الصف والشعبة</th>
+            <th style="width: 85px; text-align: left;">الرسوم</th>
+            <th style="width: 85px; text-align: left;">المسدد</th>
+            <th style="width: 85px; text-align: left;">المتبقي</th>
+            <th style="width: 70px; text-align: center;">الموقف</th>
+          </tr>
+        </thead>
+        <tbody id="rosterPrintTbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+
+      <div class="pt-4 border-t-2 border-slate-800 grid grid-cols-3 gap-4 text-center text-xs mt-4">
+        <div>
+          <p class="font-bold text-slate-700 text-[11px] mb-6">المحاسب المالي</p>
+          <p class="font-mono text-[10px]">....................................</p>
+        </div>
+        <div>
+          <p class="font-bold text-slate-700 text-[11px] mb-6">الشؤون المالية</p>
+          <p class="font-mono text-[10px]">....................................</p>
+        </div>
+        <div>
+          <p class="font-bold text-slate-700 text-[11px] mb-1">مدير المدرسة</p>
+          <p class="font-black text-xs text-slate-900">أ. يحيى علي الزقري</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCK SCREEN MODAL (GATEKEEPER) -->
+  <div id="feesLockModal" class="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 text-right animate-scale-up border border-slate-100">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 rounded-3xl bg-blue-100 text-blue-700 flex items-center justify-center mx-auto shadow-md">
+          <i data-lucide="lock" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800">المنطقة المالية محمية 🔒</h3>
+        <p class="text-xs text-slate-500">يرجى إدخال رمز المرور المالي (PIN) للوصول إلى كشوفات الرسوم</p>
+      </div>
+
+      <form autocomplete="off" onsubmit="event.preventDefault(); submitPagePin();" class="space-y-4">
+        <div class="space-y-2">
+          <input type="password" id="pagePinInput" placeholder="أدخل رمز المرور (PIN)..."
+            autocomplete="new-password" data-lpignore="true"
+            class="w-full text-center tracking-widest text-lg font-black border-2 border-slate-200 rounded-2xl p-3 focus:border-blue-500 outline-none">
+          <p id="pagePinError" class="text-xs font-bold text-rose-600 text-center hidden"></p>
+          <p class="text-[11px] text-slate-400 text-center">💡 رمز الدخول الافتراضي: <strong class="text-slate-700 font-mono">2027</strong> أو <strong class="text-slate-700 font-mono">makkah2027</strong></p>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <a href="index.html" class="flex-1 py-3 rounded-2xl text-center text-slate-600 hover:bg-slate-100 text-xs font-bold transition">العودة للرئيسية</a>
+          <button type="submit" class="flex-2 py-3 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-200 flex items-center justify-center gap-1.5">
+            <span>دخول المنصة 🚀</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentStudents = [];
+    let currentOffset = 0;
+    const limit = 50;
+    let totalCount = 0;
+    let searchTimeout = null;
+
+    async function init() {
+      if (window.lucide) lucide.createIcons();
+
+      // Clear search box if browser mistakenly autofilled an email
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput && (searchInput.value.includes("@") || searchInput.value.includes(".com"))) {
+        searchInput.value = "";
+      }
+
+      if (!checkAuth()) return;
+      await checkLiveSync();
+      await loadStudents();
+    }
+
+    function checkAuth() {
+      if (sessionStorage.getItem("makkah_fees_authenticated") !== "true") {
+        const modal = document.getElementById("feesLockModal");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          if (window.lucide) lucide.createIcons();
+          setTimeout(() => document.getElementById("pagePinInput")?.focus(), 150);
+        }
+        return false;
+      }
+      return true;
+    }
+
+    function submitPagePin() {
+      const pin = (document.getElementById("pagePinInput")?.value || "").trim();
+      const valid = ["2027", "makkah2027", "admin", "1234", "fees2027", "schoolpro"];
+      const err = document.getElementById("pagePinError");
+      if (!valid.includes(pin)) {
+        if (err) {
+          err.textContent = "رمز الدخول غير صحيح! يرجى المحاولة مجدداً.";
+          err.classList.remove("hidden");
+        }
+        return;
+      }
+      sessionStorage.setItem("makkah_fees_authenticated", "true");
+      const modal = document.getElementById("feesLockModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+      checkLiveSync();
+      loadStudents();
+    }
+
+    function getApiUrl(path) {
+      if (window.location.protocol === 'file:' || !window.location.port) {
+        return 'http://127.0.0.1:8000' + path;
+      }
+      return path;
+    }
+
+    if (window.location.protocol === 'file:') {
+      window.addEventListener("DOMContentLoaded", () => {
+        const notice = document.getElementById("fileProtocolNotice");
+        if (notice) notice.classList.remove("hidden");
+      });
+    }
+
+    function lockFeesPortal() {
+      sessionStorage.removeItem("makkah_fees_authenticated");
+      window.location.href = "index.html";
+    }
+
+    async function getOfflineFeesData() {
+      if (window.MAKKAH_FEES_DATA && window.MAKKAH_FEES_DATA.data_by_year) {
+        return window.MAKKAH_FEES_DATA;
+      }
+      try {
+        const res = await fetch('makkah_fees.json');
+        if (res.ok) {
+          const json = await res.json();
+          window.MAKKAH_FEES_DATA = json;
+          return json;
+        }
+      } catch (e) {
+        console.warn("Could not fetch makkah_fees.json:", e);
+      }
+      return null;
+    }
+
+    function populateClassDropdown(classesList) {
+      const classSelect = document.getElementById("classFilter");
+      if (!classSelect || !classesList) return;
+      const currentVal = classSelect.value;
+      while (classSelect.options.length > 1) {
+        classSelect.remove(1);
+      }
+      classesList.forEach(c => {
+        if (!c) return;
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        classSelect.appendChild(opt);
+      });
+      if (currentVal) classSelect.value = currentVal;
+    }
+
+    async function checkLiveSync(year = null) {
+      const statusEl = document.getElementById("liveSyncStatus");
+      const yearFilter = document.getElementById("yearFilter");
+      const y = year || (yearFilter ? yearFilter.value : '2026-2027');
+
+      try {
+        const res = await fetch(getApiUrl(`/api/sync_status.php?year=${encodeURIComponent(y)}`));
+        const json = await res.json();
+        if (json.success && json.data) {
+          const stats = json.data.statistics;
+          document.getElementById("statTotalStudents").textContent = (stats.total_students || 0).toLocaleString() + " طالب";
+          document.getElementById("statTotalFees").textContent = (stats.total_fees_amount || 0).toLocaleString() + " ريال";
+          document.getElementById("statTotalPaid").textContent = (stats.total_paid_amount || 0).toLocaleString() + " ريال";
+          document.getElementById("statTotalRemaining").textContent = (stats.total_remaining_amount || 0).toLocaleString() + " ريال";
+          
+          // Update table headers label
+          const yrTitle = (y && y !== 'all') ? `(${y}م)` : '(شامل كافة السنوات)';
+          const thFees = document.getElementById("thTotalFees");
+          const thPaid = document.getElementById("thTotalPaid");
+          const thRem = document.getElementById("thTotalRemaining");
+          if (thFees) thFees.textContent = `إجمالي الرسوم ${yrTitle}`;
+          if (thPaid) thPaid.textContent = `المسدد ${yrTitle}`;
+          if (thRem) thRem.textContent = `المتبقي ${yrTitle}`;
+
+          if (statusEl) {
+            const yrLabel = (y && y !== 'all') ? ` [عام ${y}م]` : ' [شامل السنوات التراكمية]';
+            statusEl.textContent = `🟢 سكول برو: متصل ومزامن (${stats.total_students} طالب)${yrLabel}`;
+            statusEl.className = "hidden sm:inline-flex text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200";
+          }
+          return;
+        }
+      } catch (e) {
+        // Fallback to offline / local database
+      }
+
+      const offlineData = await getOfflineFeesData();
+      if (offlineData && offlineData.data_by_year) {
+        let list = [];
+        if (y && y !== 'all') {
+          list = offlineData.data_by_year[y] || [];
+        } else {
+          Object.values(offlineData.data_by_year).forEach(arr => {
+            list = list.concat(arr);
+          });
+        }
+        const totalFees = list.reduce((sum, s) => sum + (s.total_fees || 0), 0);
+        const totalPaid = list.reduce((sum, s) => sum + (s.total_paid || 0), 0);
+        const totalRem = list.reduce((sum, s) => sum + (s.remaining !== undefined ? s.remaining : ((s.total_fees || 0) - (s.total_paid || 0))), 0);
+
+        document.getElementById("statTotalStudents").textContent = list.length.toLocaleString() + " طالب";
+        document.getElementById("statTotalFees").textContent = totalFees.toLocaleString() + " ريال";
+        document.getElementById("statTotalPaid").textContent = totalPaid.toLocaleString() + " ريال";
+        document.getElementById("statTotalRemaining").textContent = totalRem.toLocaleString() + " ريال";
+
+        const yrTitle = (y && y !== 'all') ? `(${y}م)` : '(شامل كافة السنوات)';
+        const thFees = document.getElementById("thTotalFees");
+        const thPaid = document.getElementById("thTotalPaid");
+        const thRem = document.getElementById("thTotalRemaining");
+        if (thFees) thFees.textContent = `إجمالي الرسوم ${yrTitle}`;
+        if (thPaid) thPaid.textContent = `المسدد ${yrTitle}`;
+        if (thRem) thRem.textContent = `المتبقي ${yrTitle}`;
+
+        if (statusEl) {
+          const yrLabel = (y && y !== 'all') ? ` [عام ${y}م]` : ' [شامل السنوات التراكمية]';
+          statusEl.textContent = `🟢 قاعدة بيانات سكول برو (محلي/أوفلاين) (${list.length} طالب)${yrLabel}`;
+          statusEl.className = "hidden sm:inline-flex text-xs font-bold text-sky-800 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-200";
+        }
+      } else if (statusEl) {
+        statusEl.textContent = "🟡 وضع العمل دون اتصال (الخادم غير مشغل)";
+      }
+    }
+
+    async function triggerLiveSyncFromSchoolPro() {
+      const btn = document.getElementById("btnTriggerSync");
+      const btnText = document.getElementById("btnTriggerSyncText");
+      const icon = document.getElementById("iconSyncSpinner");
+      
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = "جاري سحب البيانات...";
+      if (icon) icon.classList.add("animate-spin");
+
+      try {
+        const res = await fetch(getApiUrl("/api/trigger_sync.php"));
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ تم التحديث بنجاح! تم سحب كافة الحركات وسندات القبض المسجلة في سكول برو.");
+          const y = document.getElementById("yearFilter") ? document.getElementById("yearFilter").value : '2026-2027';
+          await checkLiveSync(y);
+          await loadStudents();
+        } else {
+          alert("⚠️ " + (data.message || "فشلت المزامنة"));
+        }
+      } catch (err) {
+        alert("❌ تعذر الاتصال بخادم المزامنة المحلي (تأكد من تشغيل الخادم)");
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = "تحديث من سكول برو 🔄";
+        if (icon) icon.classList.remove("animate-spin");
+      }
+    }
+
+    function onYearFilterChanged() {
+      currentOffset = 0;
+      const y = document.getElementById("yearFilter") ? document.getElementById("yearFilter").value : '2026-2027';
+      checkLiveSync(y);
+      loadStudents();
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentOffset = 0;
+        loadStudents();
+      }, 300);
+    }
+
+    function clearSearchInput() {
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.value = "";
+        searchInput.focus();
+      }
+      const clearBtn = document.getElementById("clearSearchBtn");
+      if (clearBtn) clearBtn.classList.add("hidden");
+      currentOffset = 0;
+      loadStudents();
+    }
+
+    async function loadStudents() {
+      const searchInput = document.getElementById("searchInput");
+      let q = searchInput ? searchInput.value.trim() : "";
+
+      // AUTO-DISCARD BROWSER AUTOFILL (e.g. user email saved in browser password manager)
+      if (q.includes("@") || q.includes(".com")) {
+        if (searchInput) searchInput.value = "";
+        q = "";
+      }
+
+      // Update clear button
+      const clearBtn = document.getElementById("clearSearchBtn");
+      if (clearBtn) {
+        if (q.length > 0) clearBtn.classList.remove("hidden");
+        else clearBtn.classList.add("hidden");
+      }
+
+      const cls = document.getElementById("classFilter") ? document.getElementById("classFilter").value : "";
+      const year = document.getElementById("yearFilter") ? document.getElementById("yearFilter").value : "2026-2027";
+      const status = document.getElementById("statusFilter") ? document.getElementById("statusFilter").value : "all";
+      const tbody = document.getElementById("studentsTableBody");
+
+      tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">جاري تحميل البيانات...</td></tr>`;
+
+      try {
+        const url = getApiUrl(`/api/students.php?limit=${limit}&offset=${currentOffset}&q=${encodeURIComponent(q)}&class=${encodeURIComponent(cls)}&year=${encodeURIComponent(year)}&status=${encodeURIComponent(status)}`);
+        const res = await fetch(url);
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          currentStudents = json.data.students || [];
+          totalCount = json.data.total || 0;
+
+          if (json.data.classes && json.data.classes.length > 0) {
+            populateClassDropdown(json.data.classes);
+          }
+
+          renderStudentsTable(currentStudents);
+          updatePagination();
+          return;
+        }
+      } catch (err) {
+        // Fallback to offline / local database
+      }
+
+      const offlineData = await getOfflineFeesData();
+      if (offlineData && offlineData.data_by_year) {
+        let rawList = [];
+        if (year && year !== 'all') {
+          rawList = (offlineData.data_by_year[year] || []).map(s => ({ ...s, academic_year: year }));
+        } else {
+          Object.keys(offlineData.data_by_year).forEach(yr => {
+            (offlineData.data_by_year[yr] || []).forEach(s => {
+              rawList.push({ ...s, academic_year: yr });
+            });
+          });
+        }
+
+        const allClasses = [...new Set(rawList.map(s => s.cl_ar_nm).filter(Boolean))].sort();
+        populateClassDropdown(allClasses);
+
+        if (q) {
+          const qNorm = q.toLowerCase();
+          rawList = rawList.filter(s => {
+            const name = (s.st_ar_nm || '').toLowerCase();
+            const id = String(s.st_no || '');
+            const mo = String(s.mo_st_no || '');
+            return name.includes(qNorm) || id.includes(qNorm) || mo.includes(qNorm);
+          });
+        }
+
+        if (cls) {
+          rawList = rawList.filter(s => (s.cl_ar_nm || '').includes(cls));
+        }
+
+        if (status === 'paid') {
+          rawList = rawList.filter(s => (s.remaining <= 0 && s.total_fees > 0));
+        } else if (status === 'due') {
+          rawList = rawList.filter(s => s.remaining > 0);
+        }
+
+        totalCount = rawList.length;
+        const pageSlice = rawList.slice(currentOffset, currentOffset + limit);
+        currentStudents = pageSlice.map(s => ({
+          student_id: s.st_no,
+          student_code: s.st_no,
+          full_name: s.st_ar_nm,
+          current_class_name: s.cl_ar_nm,
+          branch_name: (s.cl_ar_nm && s.cl_ar_nm.includes('/')) ? s.cl_ar_nm.split('/')[1] : 'أ',
+          total_fees: s.total_fees || 0,
+          total_paid: s.total_paid || 0,
+          remaining_balance: s.remaining !== undefined ? s.remaining : ((s.total_fees || 0) - (s.total_paid || 0)),
+          payment_status: (s.remaining <= 0 && s.total_fees > 0) ? 'خالص الرسوم' : (s.remaining > 0 ? 'متبقي عليه' : 'غير مقيد'),
+          academic_year: s.academic_year || year,
+          payments_history: s.payments_history || [],
+          fees_breakdown: s.fees_breakdown || []
+        }));
+
+        renderStudentsTable(currentStudents);
+        updatePagination();
+      } else {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="p-8 text-center text-rose-500 font-bold">
+              <div class="text-sm sm:text-base font-black mb-1">⚠️ تعذر جلب بيانات الطلاب</div>
+              <div class="text-xs text-slate-500 font-normal">
+                يرجى التأكد من وجود ملف <code>makkah_fees.json</code> بجانب الصفحة أو تشغيل خادم المنصة.
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderStudentsTable(students) {
+      const tbody = document.getElementById("studentsTableBody");
+      const statusFilter = document.getElementById("statusFilter").value;
+
+      let list = students;
+      if (statusFilter === 'paid') {
+        list = list.filter(s => parseFloat(s.remaining_balance) <= 0 && parseFloat(s.total_fees) > 0);
+      } else if (statusFilter === 'due') {
+        list = list.filter(s => parseFloat(s.remaining_balance) > 0);
+      }
+
+      document.getElementById("tableCountBadge").textContent = list.length;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-bold">لم يتم العثور على أي نتائج مطابقة</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((s, idx) => {
+        const totalFees = parseFloat(s.total_fees || 0);
+        const totalPaid = parseFloat(s.total_paid || 0);
+        const remaining = parseFloat(s.remaining_balance || 0);
+
+        let statusBadge = '';
+        if (remaining <= 0 && totalFees > 0) {
+          statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold text-[10px]">خالص الرسوم ✅</span>';
+        } else if (remaining > 0) {
+          statusBadge = '<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full font-bold text-[10px]">متبقي عليه ⚠️</span>';
+        } else {
+          statusBadge = '<span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-bold text-[10px]">غير مقيد</span>';
+        }
+
+        return `
+          <tr class="hover:bg-sky-50/50 transition cursor-pointer" onclick="openStudentStatement(${s.student_id})">
+            <td class="p-3.5 text-center font-bold text-slate-400">${currentOffset + idx + 1}</td>
+            <td class="p-3.5 text-center font-bold text-slate-600 font-mono">${s.student_code || s.student_id}</td>
+            <td class="p-3.5 font-black text-slate-900">${s.full_name}</td>
+            <td class="p-3.5 font-bold text-slate-500">${s.current_class_name || '-'} / ${s.branch_name || 'أ'}</td>
+            <td class="p-3.5 text-left font-black text-slate-800">${totalFees.toLocaleString()} ريال</td>
+            <td class="p-3.5 text-left font-black text-emerald-600">${totalPaid.toLocaleString()} ريال</td>
+            <td class="p-3.5 text-left font-black text-rose-600">${remaining.toLocaleString()} ريال</td>
+            <td class="p-3.5 text-center">${statusBadge}</td>
+            <td class="p-3.5 text-center">
+              <div class="flex items-center justify-center gap-1.5" onclick="event.stopPropagation()">
+                <button onclick="openStudentStatement(${s.student_id})" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-xs transition border border-blue-200 shadow-xs flex items-center gap-1" title="معاينة كشف الحساب">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                  <span>كشف الحساب</span>
+                </button>
+                <button onclick="printStudentDirectly(${s.student_id})" class="px-2.5 py-1.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs transition shadow-xs flex items-center gap-1" title="طباعة كشف الحساب الرسمي">
+                  <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                  <span>طباعة 🖨️</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterLocalRows() {
+      currentOffset = 0;
+      loadStudents();
+    }
+
+    function updatePagination() {
+      const page = Math.floor(currentOffset / limit) + 1;
+      const totalPages = Math.ceil(totalCount / limit) || 1;
+      document.getElementById("pageBadge").textContent = `صفحة ${page} من ${totalPages}`;
+      document.getElementById("paginationInfo").textContent = `عرض ${currentOffset + 1} إلى ${Math.min(currentOffset + limit, totalCount)} من إجمالي ${totalCount} طالب`;
+      document.getElementById("prevBtn").disabled = currentOffset <= 0;
+      document.getElementById("nextBtn").disabled = currentOffset + limit >= totalCount;
+    }
+
+    function changePage(delta) {
+      currentOffset = Math.max(0, currentOffset + (delta * limit));
+      loadStudents();
+    }
+
+    let currentStatementStudentId = null;
+    let currentStatementYear = "2026-2027";
+
+    function renderStatementModalContent(st, acc, trans, year) {
+      const tabsContainer = document.getElementById("modalYearTabs");
+      if (tabsContainer) {
+        const available = ["2026-2027", "2025-2026", "2024-2025", "2023-2024", "2022-2023", "2021-2022", "2020-2021", "all"];
+        tabsContainer.innerHTML = available.map(yr => {
+          const isActive = (yr === year);
+          const label = yr === 'all' ? 'كافة السنوات (تراكمي)' : (yr === '2026-2027' ? 'العام الحالي: 2026-2027م' : `${yr}م`);
+          const btnClass = isActive 
+            ? 'bg-blue-600 text-white font-black shadow-xs' 
+            : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200';
+          return `<button type="button" onclick="populateStatementData(${st.student_id}, '${yr}')" class="px-2.5 py-1 rounded-xl text-xs transition ${btnClass}">${label}</button>`;
+        }).join('');
+      }
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('ar-YE', { year: 'numeric', month: '2-digit', day: '2-digit' }) || now.toISOString().slice(0, 10);
+      const timeStr = now.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' });
+      const refCode = `SP-${String(st.student_code || st.student_id).padStart(4, '0')}-${now.getFullYear()}`;
+
+      const totalFees = parseFloat(acc.total_fees || 0);
+      const totalPaid = parseFloat(acc.total_paid || 0);
+      const remaining = parseFloat(acc.remaining_balance || 0);
+
+      // Header Meta Info
+      document.getElementById("mDocRef").textContent = refCode;
+      document.getElementById("mDocDate").textContent = dateStr;
+      document.getElementById("mDocTime").textContent = timeStr;
+      const docYear = document.getElementById("mDocYear");
+      if (docYear) {
+        docYear.textContent = (year && year !== 'all') 
+          ? `العام الدراسي: ${year}م` 
+          : `العام الدراسي: جميع السنوات التراكمية`;
+      }
+
+      // Official Status Badge
+      const statusBadgeEl = document.getElementById("mOfficialStatusBadge");
+      if (remaining <= 0 && totalFees > 0) {
+        statusBadgeEl.className = "inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300";
+        statusBadgeEl.textContent = "خالص الرسوم (مسدد بالكامل) ✅";
+      } else if (remaining > 0) {
+        statusBadgeEl.className = "inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300";
+        statusBadgeEl.textContent = "متبقي عليه رسوم ⚠️";
+      } else {
+        statusBadgeEl.className = "inline-block px-2.5 py-0.5 rounded-md text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-300";
+        statusBadgeEl.textContent = "غير مقيد";
+      }
+
+      // Student Profile Data
+      document.getElementById("mOfficialStudentName").textContent = st.full_name || '-';
+      document.getElementById("mOfficialStudentCode").textContent = st.student_code || st.student_id;
+      document.getElementById("mOfficialStudentClass").textContent = `${st.current_class_name || 'غير محدد'} • الشعبة: ${st.branch_name || 'أ'}`;
+      
+      const guardianInfo = st.guardian_name 
+        ? `${st.guardian_name} ${st.guardian_phone ? '(' + st.guardian_phone + ')' : ''}`
+        : (st.guardian_phone || 'مسجل في السجلات المدرسية الرسمية');
+      document.getElementById("mOfficialGuardian").textContent = guardianInfo;
+
+      // Financial Totals with Year Context
+      const yrLabelText = (year && year !== 'all') ? `(${year}م)` : `(تراكمي)`;
+      const fTitle = document.getElementById("mOfficialTotalFeesTitle");
+      const pTitle = document.getElementById("mOfficialTotalPaidTitle");
+      const rTitle = document.getElementById("mOfficialRemainingTitle");
+      if (fTitle) fTitle.textContent = `إجمالي الرسوم المقررة ${yrLabelText}`;
+      if (pTitle) pTitle.textContent = `إجمالي المسدد ${yrLabelText}`;
+      if (rTitle) rTitle.textContent = `المتبقي المطلوب سداده ${yrLabelText}`;
+
+      document.getElementById("mOfficialTotalFees").textContent = totalFees.toLocaleString() + " ريال";
+      document.getElementById("mOfficialTotalPaid").textContent = totalPaid.toLocaleString() + " ريال";
+      document.getElementById("mOfficialRemaining").textContent = remaining.toLocaleString() + " ريال";
+
+      // Transactions Table (8 columns matching header)
+      const tbody = document.getElementById("mTransactionsBody");
+      if (trans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-5 text-center text-slate-400 font-bold">لا توجد حركات مالية أو سندات قبض مسجلة لهذا الطالب في عام ${year}م في سكول برو</td></tr>`;
+      } else {
+        tbody.innerHTML = trans.map((t, idx) => {
+          const isPayment = (t.trans_type || '').includes('سداد') || (t.trans_type || '').includes('مقبوضات') || t.acc_type_code === 1;
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td style="text-align: center; font-weight: bold; color: #64748b;">${idx + 1}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">${t.receipt_no && t.receipt_no !== '0' && t.receipt_no !== '-' ? '#' + t.receipt_no : '-'}</td>
+              <td style="text-align: center; font-size: 11px; font-weight: 700;">${t.trans_date || '-'}</td>
+              <td style="text-align: center; font-size: 10px; color: #475569; font-weight: 600;">${t.academic_year || '-'}</td>
+              <td style="text-align: center;"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPayment ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-blue-100 text-blue-800 border border-blue-200'}">${t.trans_type || 'قسط دراسي'}</span></td>
+              <td style="font-weight: bold; color: #1e293b;">${t.fee_type_name || 'رسوم دراسية'}</td>
+              <td style="text-align: left; font-weight: 900; ${isPayment ? 'color: #059669;' : 'color: #0f172a;'}">${parseFloat(t.amount || 0).toLocaleString()} ريال</td>
+              <td style="color: #64748b; font-size: 11px;">${t.notes || '-'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function populateStatementData(studentId, yearOverride = null) {
+      currentStatementStudentId = studentId;
+      const currentSelectedYear = document.getElementById("yearFilter") ? document.getElementById("yearFilter").value : "2026-2027";
+      const year = (yearOverride !== null) ? yearOverride : (currentSelectedYear || "2026-2027");
+      currentStatementYear = year;
+
+      try {
+        const res = await fetch(getApiUrl(`/api/student_details.php?id=${studentId}&year=${encodeURIComponent(year)}`));
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          renderStatementModalContent(d.student, d.account_summary || {}, d.transactions || [], year);
+          return d;
+        }
+      } catch (err) {
+        // Fallback to offline / local database
+      }
+
+      const offlineData = await getOfflineFeesData();
+      if (offlineData && offlineData.data_by_year) {
+        let stData = null;
+        let resolvedYear = year;
+        const searchYears = (year && year !== 'all') ? [year] : Object.keys(offlineData.data_by_year);
+
+        for (const yr of searchYears) {
+          const list = offlineData.data_by_year[yr] || [];
+          const found = list.find(s => s.st_no == studentId || String(s.st_no) == String(studentId));
+          if (found) {
+            stData = found;
+            resolvedYear = yr;
+            break;
+          }
+        }
+
+        if (!stData) {
+          for (const yr of Object.keys(offlineData.data_by_year)) {
+            const list = offlineData.data_by_year[yr] || [];
+            const found = list.find(s => s.st_no == studentId || String(s.st_no) == String(studentId));
+            if (found) {
+              stData = found;
+              resolvedYear = yr;
+              break;
+            }
+          }
+        }
+
+        if (stData) {
+          const st = {
+            student_id: stData.st_no,
+            student_code: stData.st_no,
+            full_name: stData.st_ar_nm,
+            current_class_name: stData.cl_ar_nm,
+            branch_name: (stData.cl_ar_nm && stData.cl_ar_nm.includes('/')) ? stData.cl_ar_nm.split('/')[1] : 'أ',
+            guardian_name: '',
+            guardian_phone: ''
+          };
+          const acc = {
+            total_fees: stData.total_fees || 0,
+            total_paid: stData.total_paid || 0,
+            remaining_balance: stData.remaining !== undefined ? stData.remaining : ((stData.total_fees || 0) - (stData.total_paid || 0))
+          };
+
+          const trans = [
+            ...(stData.fees_breakdown || []).map(b => ({
+              trans_id: b.acc_no || Math.random(),
+              trans_type: 'قسط دراسي مقرر',
+              acc_type_code: 2,
+              fee_type_name: b.fee_type || 'رسوم دراسية',
+              amount: b.amount,
+              receipt_no: '-',
+              trans_date: b.date || '-',
+              academic_year: resolvedYear,
+              notes: 'قسط الرسوم المقررة (استثناء الكتب)'
+            })),
+            ...(stData.payments_history || []).map(p => ({
+              trans_id: p.acc_no || Math.random(),
+              trans_type: 'سند قبض / مقبوضات نقدية',
+              acc_type_code: 1,
+              fee_type_name: p.fee_type || 'رسوم دراسية',
+              amount: p.amount,
+              receipt_no: p.receipt_no || '-',
+              trans_date: p.date || '-',
+              academic_year: resolvedYear,
+              notes: p.note || 'سند قبض مدرسي'
+            }))
+          ];
+
+          renderStatementModalContent(st, acc, trans, year);
+          return { student: st, account_summary: acc, transactions: trans };
+        }
+      }
+
+      alert("لم يتم العثور على بيانات تفصيلية لهذا الطالب في السجلات المدرسية");
+      return null;
+    }
+
+    async function openStudentStatement(studentId) {
+      const data = await populateStatementData(studentId);
+      if (!data) return;
+
+      const modal = document.getElementById("statementModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function printStudentDirectly(studentId) {
+      const data = await populateStatementData(studentId);
+      if (!data) return;
+
+      const modal = document.getElementById("statementModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (window.lucide) lucide.createIcons();
+
+      document.body.classList.add('printing-student-statement');
+      window.print();
+    }
+
+    function printCurrentStatement() {
+      document.body.classList.add('printing-student-statement');
+      window.print();
+    }
+
+    function printCurrentRoster() {
+      const statusFilter = document.getElementById("statusFilter").value;
+      let list = currentStudents;
+      if (statusFilter === 'paid') {
+        list = list.filter(s => parseFloat(s.remaining_balance) <= 0 && parseFloat(s.total_fees) > 0);
+      } else if (statusFilter === 'due') {
+        list = list.filter(s => parseFloat(s.remaining_balance) > 0);
+      }
+
+      if (list.length === 0) {
+        alert("لا توجد بيانات طلاب للطباعة حالياً");
+        return;
+      }
+
+      const cls = document.getElementById("classFilter").value;
+      document.getElementById("rosterFilterSummary").textContent = (cls ? `الصف: ${cls}` : 'جميع الصفوف الدراسية') + (statusFilter === 'due' ? ' (المتبقي عليهم فقط)' : statusFilter === 'paid' ? ' (خالصي الرسوم فقط)' : '');
+      
+      const now = new Date();
+      document.getElementById("rosterDate").textContent = now.toLocaleDateString('ar-YE', { year: 'numeric', month: '2-digit', day: '2-digit' }) || now.toISOString().slice(0, 10);
+      document.getElementById("rosterCount").textContent = list.length;
+
+      const tbody = document.getElementById("rosterPrintTbody");
+      tbody.innerHTML = list.map((s, idx) => {
+        const totalFees = parseFloat(s.total_fees || 0);
+        const totalPaid = parseFloat(s.total_paid || 0);
+        const remaining = parseFloat(s.remaining_balance || 0);
+        const statusText = (remaining <= 0 && totalFees > 0) ? 'خالص' : (remaining > 0 ? 'متبقي' : 'غير مقيد');
+        return `
+          <tr>
+            <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
+            <td style="font-family: monospace; font-weight: bold; text-align: center;">${s.student_code || s.student_id}</td>
+            <td style="font-weight: bold;">${s.full_name}</td>
+            <td style="text-align: center;">${s.current_class_name || '-'} / ${s.branch_name || 'أ'}</td>
+            <td style="text-align: left; font-weight: bold;">${totalFees.toLocaleString()}</td>
+            <td style="text-align: left; font-weight: bold; color: #059669;">${totalPaid.toLocaleString()}</td>
+            <td style="text-align: left; font-weight: bold; color: ${remaining > 0 ? '#e11d48' : '#059669'};">${remaining.toLocaleString()}</td>
+            <td style="text-align: center; font-weight: bold;">${statusText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.body.classList.add('printing-roster');
+      window.print();
+    }
+
+    function closeStatementModal() {
+      const modal = document.getElementById("statementModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.classList.remove('printing-student-statement');
+    }
+
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('printing-student-statement');
+      document.body.classList.remove('printing-roster');
+    });
+
+    function exportTableToCSV() {
+      if (currentStudents.length === 0) {
+        alert("لا توجد بيانات للتصدير حالياً");
+        return;
+      }
+      let csv = "\uFEFFم,رقم القيد,اسم الطالب,الصف,إجمالي الرسوم,المسدد,المتبقي,حالة السداد\n";
+      currentStudents.forEach((s, i) => {
+        csv += `${i+1},"${s.student_code}","${s.full_name}","${s.current_class_name}",${s.total_fees},${s.total_paid},${s.remaining_balance},"${s.payment_status}"\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `كشف_رسوم_مدارس_مكة_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

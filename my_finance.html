@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة المعلم - البطاقة المالية وكشف الحساب | مدارس مكة الأهلية الحديثة</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Official Teachers Database & Finance Records (School Pro) -->
+  <script src="makkah_teachers_data.js"></script>
+  <script src="makkah_teachers_finance_data.js"></script>
+  <style>
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fc 50%, #f8fafc 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.08);
+    }
+    .official-doc-sheet {
+      border: 3px double #1e3a8a;
+      border-radius: 16px;
+      padding: 24px;
+      background: #ffffff;
+      color: #0f172a;
+      position: relative;
+    }
+    .official-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .official-table th, .official-table td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+    }
+    .official-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .stamp-box {
+      width: 95px;
+      height: 95px;
+      border: 2px dashed #94a3b8;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 9px;
+      color: #64748b;
+      font-weight: bold;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #statementContainer {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .official-doc-sheet {
+        border: 2px solid #0f172a !important;
+        box-shadow: none !important;
+        padding: 12px !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-purple-100 selection:text-purple-900 min-h-screen flex flex-col justify-between">
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-xs no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 transition overflow-hidden border border-purple-100 p-0.5" title="العودة للرئيسية">
+          <img src="school_logo.jpg" alt="شعار مدارس مكة" class="w-full h-full object-contain rounded-xl" onerror="this.src='logo.png'">
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight">مدارس مكة الأهلية الحديثة</h1>
+            <span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>بوابة المعلم المالية</span>
+            </span>
+          </div>
+          <p class="text-xs text-purple-600 font-medium">الاستعلام المباشر عن البطاقة المالية ومفردات الراتب والسلف</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <a href="index.html" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="home" class="w-4 h-4"></i>
+          <span>الرئيسية</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+
+    <!-- SEARCH / CODE INPUT SECTION (Show when no active teacher statement or when switching) -->
+    <div id="authSearchSection" class="glass-card rounded-3xl p-6 sm:p-10 border border-purple-100 shadow-lg max-w-xl mx-auto space-y-6 text-center no-print">
+      <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-purple-700 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-xl shadow-purple-200">
+        <i data-lucide="wallet-cards" class="w-10 h-10"></i>
+      </div>
+      <div>
+        <h2 class="text-xl sm:text-2xl font-black text-slate-900">استعلام البطاقة المالية للمعلم</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
+          أدخل كود المعلم الوظيفي الخاص بك أو رقم الهاتف للاطلاع على استحقاقات الراتب وكشف السلف والخصومات المعتمدة في سكول برو.
+        </p>
+      </div>
+
+      <form onsubmit="handleCodeSubmit(event)" class="space-y-4">
+        <div class="relative">
+          <i data-lucide="id-card" class="w-5 h-5 absolute right-4 top-4 text-purple-500"></i>
+          <input type="text" id="teacherCodeInput" placeholder="أدخل الكود الوظيفي (مثال: 01018)..." 
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+            class="w-full pr-12 pl-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-purple-200 text-center text-lg font-black tracking-wider text-slate-900 focus:outline-none focus:border-purple-600 focus:bg-white transition">
+        </div>
+
+        <button type="submit" id="btnSubmitSearch" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white text-sm font-black shadow-lg shadow-purple-200 transition flex items-center justify-center gap-2">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span id="btnSubmitSearchText">عرض بطاقتي المالية 💳</span>
+        </button>
+      </form>
+
+      <div id="searchErrorMessage" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold"></div>
+
+      <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 space-y-1">
+        <p>🔒 خصوصية تامة: لا يمكن لأي معلم الاطلاع على رواتب أو سلف أي زميل آخر.</p>
+        <p>💡 يمكن إدخال الكود بصفر أو بدون صفر (مثال: <strong class="text-slate-600 font-mono">01018</strong> أو <strong class="text-slate-600 font-mono">1018</strong>).</p>
+      </div>
+    </div>
+
+    <!-- STATEMENT RESULT CONTAINER (Hidden until code is successfully verified) -->
+    <div id="statementContainer" class="hidden space-y-6">
+
+      <!-- Action Toolbar (Year/Month filter & Print & Switch) -->
+      <div class="glass-card rounded-2xl p-4 border border-purple-100 flex flex-wrap items-center justify-between gap-3 no-print">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-black text-slate-900">البطاقة المالية المعتمدة</span>
+          <span id="activeTeacherBadge" class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-lg border border-purple-200">--</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Academic Year Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-600"></i>
+            <span class="text-slate-500 text-[11px]">العام:</span>
+            <select id="statementYearFilter" onchange="reloadActiveTeacherStatement()" class="bg-transparent text-slate-800 focus:outline-none cursor-pointer text-xs font-bold">
+              <option value="2026">2026 - 2027م (العام الحالي)</option>
+              <option value="2025">2025 - 2026م</option>
+              <option value="2024">2024 - 2025م</option>
+              <option value="2023">2023 - 2024م</option>
+              <option value="all">جميع السنوات (تراكمي)</option>
+            </select>
+          </div>
+
+          <!-- Month Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-600"></i>
+            <span class="text-slate-500 text-[11px]">الشهر:</span>
+            <select id="statementMonthFilter" onchange="reloadActiveTeacherStatement()" class="bg-transparent text-slate-800 focus:outline-none cursor-pointer text-xs font-bold">
+              <option value="all">كل الشهور</option>
+              <option value="9">سبتمبر (9)</option>
+              <option value="8">أغسطس (8)</option>
+              <option value="7">يوليو (7)</option>
+              <option value="6">يونيو (6)</option>
+              <option value="5">مايو (5)</option>
+              <option value="4">أبريل (4)</option>
+              <option value="3">مارس (3)</option>
+              <option value="2">فبراير (2)</option>
+              <option value="1">يناير (1)</option>
+              <option value="10">أكتوبر (10)</option>
+              <option value="11">نوفمبر (11)</option>
+              <option value="12">ديسمبر (12)</option>
+            </select>
+          </div>
+
+          <!-- Print Button -->
+          <button onclick="window.print()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>طباعة البطاقة 🖨️</span>
+          </button>
+
+          <!-- Switch Teacher / Query Another Code -->
+          <button onclick="resetAndQueryAnother()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1 border border-slate-200" title="استعلام عن كود آخر">
+            <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
+            <span>تبديل الكود</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Year Notice Slot -->
+      <div id="activeYearNotice" class="hidden no-print"></div>
+
+      <!-- Printable Official Document Sheet -->
+      <div class="official-doc-sheet space-y-6 shadow-xl">
+        
+        <!-- Document Header -->
+        <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4">
+          <div class="text-right">
+            <h2 class="text-xs sm:text-sm font-black text-slate-900">الجمهورية اليمنية</h2>
+            <h3 class="text-[11px] font-bold text-slate-700">وزارة التربية والتعليم</h3>
+            <h1 class="text-sm sm:text-base font-black text-purple-900 mt-0.5">مدارس مكة الأهلية الحديثة</h1>
+            <p class="text-[10px] text-slate-500 font-bold">إدارة الشؤون المالية والحسابات</p>
+          </div>
+          <div class="text-center">
+            <img src="school_logo.jpg" alt="شعار مدارس مكة الأهلية الحديثة" class="h-16 w-16 object-contain mx-auto rounded-2xl p-1 bg-white border border-slate-200 shadow-xs" onerror="this.src='logo.png'">
+            <span class="inline-block mt-1.5 text-[11px] font-black bg-purple-100 text-purple-900 px-3 py-0.5 rounded-full border border-purple-200">
+              بطاقة الحساب المالي للمعلم
+            </span>
+          </div>
+          <div class="text-left text-xs font-bold text-slate-600 space-y-1">
+            <div>التاريخ: <span id="docPrintDate" class="text-slate-900">--</span></div>
+            <div>العام المالي: <span id="docAcademicYear" class="text-purple-800">--</span></div>
+            <div>المصدر: <span class="text-emerald-700">سكول برو المباشر</span></div>
+          </div>
+        </div>
+
+        <!-- Teacher Profile Details Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+          <div>
+            <span class="text-slate-400 block font-bold text-[10px]">اسم المعلم / الموظف</span>
+            <span class="font-black text-slate-900 text-sm mt-0.5 block" id="docEmpName">--</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-bold text-[10px]">الرقم والكود الوظيفي</span>
+            <span class="font-bold text-purple-800 text-sm mt-0.5 block" id="docEmpCode">--</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-bold text-[10px]">المسمى الوظيفي</span>
+            <span class="font-bold text-slate-800 mt-0.5 block" id="docEmpJob">--</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-bold text-[10px]">حالة الحساب</span>
+            <span class="font-bold text-emerald-700 mt-0.5 block" id="docEmpStatus">نشط ومطابق لسكول برو ✅</span>
+          </div>
+        </div>
+
+        <!-- Financial Summary Ribbon Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+          <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+            <span class="text-[10px] font-bold text-blue-700 block">إجمالي الراتب</span>
+            <span class="text-sm font-black text-blue-900 mt-0.5 block" id="docTotalSalary">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl bg-purple-50 border border-purple-200">
+            <span class="text-[10px] font-bold text-purple-700 block">الحوافز والمكافآت</span>
+            <span class="text-sm font-black text-purple-900 mt-0.5 block" id="docTotalBonuses">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+            <span class="text-[10px] font-bold text-amber-700 block">إجمالي السلف</span>
+            <span class="text-sm font-black text-amber-900 mt-0.5 block" id="docTotalAdvances">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl bg-rose-50 border border-rose-200">
+            <span class="text-[10px] font-bold text-rose-700 block">الخصومات والاستقطاعات</span>
+            <span class="text-sm font-black text-rose-900 mt-0.5 block" id="docTotalDeductions">0 ريال</span>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50 border-2 border-emerald-400 col-span-2 sm:col-span-1">
+            <span class="text-[10px] font-bold text-emerald-700 block">صافي الراتب المستحق</span>
+            <span class="text-sm font-black text-emerald-800 mt-0.5 block" id="docNetPayable">0 ريال</span>
+          </div>
+        </div>
+
+        <!-- Section 1: Advances Ledger (سجل السلف) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="hand-coins" class="w-4 h-4 text-amber-600"></i>
+              <span>تفاصيل السلف المأخوذة وتواريخها (جدول السلف)</span>
+            </h4>
+            <span id="advancesCountBadge" class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">0 سلفة</span>
+          </div>
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 5%">#</th>
+                <th style="width: 30%">نوع السلفة</th>
+                <th style="width: 20%">مبلغ السلفة</th>
+                <th style="width: 15%">رقم السند اليدوي</th>
+                <th style="width: 15%">تاريخ السلفة</th>
+                <th style="width: 15%">الشهر</th>
+              </tr>
+            </thead>
+            <tbody id="docAdvancesTableBody">
+              <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد سلف مقيدة</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section 2: Deductions Ledger (سجل الخصومات والاستقطاعات) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="scissors" class="w-4 h-4 text-rose-600"></i>
+              <span>تفاصيل الخصومات والاستقطاعات (غياب، تأخير، أقساط...)</span>
+            </h4>
+            <span id="deductionsCountBadge" class="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-md">0 خصم</span>
+          </div>
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 5%">#</th>
+                <th style="width: 30%">سبب / نوع الخصم</th>
+                <th style="width: 20%">مبلغ الخصم</th>
+                <th style="width: 15%">رقم السند</th>
+                <th style="width: 15%">تاريخ الخصم</th>
+                <th style="width: 15%">الشهر</th>
+              </tr>
+            </thead>
+            <tbody id="docDeductionsTableBody">
+              <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد خصومات مقيدة</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section 3: Full Chronological Statement (كشف الحساب المالي الزمني الكامل) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="list-ordered" class="w-4 h-4 text-purple-600"></i>
+              <span>كشف الحساب المالي الكامل مرتب زمنياً</span>
+            </h4>
+          </div>
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 5%">#</th>
+                <th style="width: 15%">التاريخ</th>
+                <th style="width: 35%">بيان الحركة المالية</th>
+                <th style="width: 15%">استحقاق (له)</th>
+                <th style="width: 15%">سلفة / خصم (عليه)</th>
+                <th style="width: 15%">رقم السند</th>
+              </tr>
+            </thead>
+            <tbody id="docAllTransTableBody">
+              <tr><td colspan="6" class="text-center py-2 text-slate-400">لا توجد حركات</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Document Signatures Footer -->
+        <div class="pt-6 border-t-2 border-slate-800 grid grid-cols-3 gap-6 text-center text-xs font-bold text-slate-700">
+          <div>
+            <p class="font-black text-slate-900 mb-10">الموظف / المعلم المستلم</p>
+            <p class="text-slate-400 text-[10px]">التوقيع: ............................</p>
+          </div>
+          <div>
+            <div class="stamp-box">
+              <span>ختم الحسابات</span>
+              <span class="text-[8px] text-purple-800 font-black">مدارس مكة</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-black text-slate-900 mb-10">المسؤول المالي / الحسابات</p>
+            <p class="text-slate-400 text-[10px]">التوقيع: ............................</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Page Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print">
+    <p>© مدارس مكة الأهلية الحديثة • نظام الربط المباشر مع سكول برو (School Pro Live)</p>
+  </footer>
+
+  <!-- Logic Script -->
+  <script>
+    let currentTeacherCode = '';
+
+    function formatMoney(amount) {
+      if (amount === undefined || amount === null || isNaN(amount)) return "0";
+      return Number(amount).toLocaleString('en-US');
+    }
+
+    // Auto-check URL parameter e.g. ?code=01018
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons(); } catch(e){}
+      }
+      const params = new URLSearchParams(window.location.search);
+      const codeFromUrl = params.get('code') || params.get('emp_code');
+      const savedCode = localStorage.getItem('makkah_teacher_code');
+
+      if (codeFromUrl) {
+        document.getElementById('teacherCodeInput').value = codeFromUrl;
+        fetchTeacherStatement(codeFromUrl);
+      } else if (savedCode) {
+        document.getElementById('teacherCodeInput').value = savedCode;
+      }
+    });
+
+    async function handleCodeSubmit(e) {
+      if (e) e.preventDefault();
+      const code = document.getElementById('teacherCodeInput').value.trim();
+      if (!code) {
+        showError('يرجى إدخال الكود الوظيفي الخاص بك');
+        return;
+      }
+      await fetchTeacherStatement(code);
+    }
+
+    async function reloadActiveTeacherStatement() {
+      if (currentTeacherCode) {
+        await fetchTeacherStatement(currentTeacherCode);
+      }
+    }
+
+    function getApiUrl(path) {
+      const p = path.startsWith('/') ? path : '/' + path;
+      if (window.location.protocol === 'file:' || !window.location.port) {
+        return 'http://127.0.0.1:8000' + p;
+      }
+      return p;
+    }
+
+    function getTeacherOfflineFinanceData(code, year, month) {
+      if (!window.MAKKAH_TEACHERS_FINANCE_DATA) return null;
+      const db = window.MAKKAH_TEACHERS_FINANCE_DATA;
+      const clean = String(code).trim().toLowerCase();
+      const cleanCode = clean.replace(/^0+/, '') || '0';
+      const paddedCode = cleanCode.padStart(5, '0');
+
+      // 1. Try code_map lookup
+      let empId = db.code_map[clean] || db.code_map[cleanCode] || db.code_map[paddedCode];
+
+      // 2. If not found in code map, search records directly
+      if (!empId) {
+        for (const id in db.records) {
+          const rec = db.records[id];
+          const emp = rec.employee;
+          if (emp.emp_code === clean || 
+              emp.clean_code === cleanCode || 
+              emp.emp_code === paddedCode ||
+              (emp.phone && emp.phone.includes(clean)) ||
+              (emp.full_name && emp.full_name.includes(clean))) {
+            empId = emp.emp_id;
+            break;
+          }
+        }
+      }
+
+      // 3. If still not in financial records, check window.OFFICIAL_MAKKAH_TEACHERS for real teacher identity
+      let fallbackTeacher = null;
+      if (typeof window.OFFICIAL_MAKKAH_TEACHERS !== 'undefined' && Array.isArray(window.OFFICIAL_MAKKAH_TEACHERS)) {
+        fallbackTeacher = window.OFFICIAL_MAKKAH_TEACHERS.find(t => 
+          t.code === clean || t.clean_code === cleanCode || t.code === paddedCode || String(t.emp_id) === clean || (t.name && t.name.includes(clean))
+        );
+      }
+
+      if (!empId && !fallbackTeacher) {
+        return null;
+      }
+
+      const rec = empId ? db.records[String(empId)] : null;
+      const emp = rec ? rec.employee : {
+        emp_id: fallbackTeacher.emp_id,
+        emp_code: fallbackTeacher.code,
+        clean_code: fallbackTeacher.clean_code,
+        full_name: fallbackTeacher.name,
+        job_title: fallbackTeacher.job || fallbackTeacher.subject || 'مدرس',
+        status: fallbackTeacher.status === 'active' ? 'نشط ومطابق لسكول برو ✅' : 'مقيد في السجلات',
+        phone: fallbackTeacher.phone || '',
+        active_years: fallbackTeacher.active_years || ['2026-2027']
+      };
+
+      // Determine year key
+      let yrKey = year;
+      if (!yrKey || yrKey === '2026' || yrKey.includes('2026')) yrKey = '2026-2027';
+      else if (yrKey === '2025' || yrKey.includes('2025')) yrKey = '2025-2026';
+      else if (yrKey === '2024' || yrKey.includes('2024')) yrKey = '2024-2025';
+      else if (yrKey === '2023' || yrKey.includes('2023')) yrKey = '2023-2024';
+      else if (yrKey === '2022' || yrKey.includes('2022')) yrKey = '2022-2023';
+      else if (yrKey === '2021' || yrKey.includes('2021')) yrKey = '2021-2022';
+      else if (yrKey === 'all') yrKey = 'all';
+
+      let yrData = rec ? rec.by_year[yrKey] : null;
+      if (rec && !yrData) {
+        const availableYears = Object.keys(rec.by_year).filter(y => y !== 'all');
+        if (availableYears.length > 0) {
+          yrData = rec.by_year[availableYears[0]];
+          yrKey = availableYears[0];
+        } else {
+          yrData = rec.by_year['all'];
+        }
+      }
+
+      let summary = yrData ? { ...yrData.summary } : {
+        monthly_base_salary: 0,
+        total_salary: 0,
+        total_bonuses: 0,
+        total_advances: 0,
+        total_deductions: 0,
+        total_paid_cash: 0,
+        net_payable: 0,
+        trans_count: 0
+      };
+
+      let advances = yrData ? [...yrData.advances] : [];
+      let deductions = yrData ? [...yrData.deductions] : [];
+      let transactions = yrData ? [...yrData.transactions] : [];
+
+      if (month && month !== 'all') {
+        const mNum = parseInt(month, 10);
+        advances = advances.filter(a => a.m_no === mNum);
+        deductions = deductions.filter(d => d.m_no === mNum);
+        transactions = transactions.filter(t => t.m_no === mNum);
+
+        const mSalary = transactions.filter(t => t.cat === 'استحقاق راتب').reduce((acc, t) => acc + t.amt, 0);
+        const mAdvances = advances.reduce((acc, t) => acc + t.amt, 0);
+        const mDeductions = deductions.reduce((acc, t) => acc + t.amt, 0);
+        const mCash = transactions.filter(t => t.cat === 'صرف راتب نقداً').reduce((acc, t) => acc + t.amt, 0);
+        summary.total_salary = mSalary || summary.monthly_base_salary;
+        summary.total_advances = mAdvances;
+        summary.total_deductions = mDeductions;
+        summary.total_paid_cash = mCash;
+        summary.net_payable = (summary.total_salary) - (mAdvances + mDeductions + mCash);
+        summary.trans_count = transactions.length;
+      }
+
+      return {
+        employee: emp,
+        active_years: emp.active_years || [],
+        summary: summary,
+        advances: advances.map(a => ({
+          type_name: a.type,
+          amount: a.amt,
+          receipt_no: a.rec,
+          trans_date: a.date,
+          month_name: a.m_name
+        })),
+        deductions: deductions.map(d => ({
+          type_name: d.type,
+          amount: d.amt,
+          receipt_no: d.rec,
+          trans_date: d.date,
+          month_name: d.m_name
+        })),
+        transactions: transactions.map(t => ({
+          is_credit: t.cr,
+          type_name: t.type,
+          category: t.cat,
+          amount: t.amt,
+          receipt_no: t.rec,
+          trans_date: t.date,
+          month_name: t.m_name
+        }))
+      };
+    }
+
+    async function fetchTeacherStatement(code) {
+      hideError();
+      const btn = document.getElementById('btnSubmitSearch');
+      const btnText = document.getElementById('btnSubmitSearchText');
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.innerText = 'جاري التحقق والبحث في سكول برو...';
+
+      const year = document.getElementById('statementYearFilter') ? document.getElementById('statementYearFilter').value : '2026';
+      const month = document.getElementById('statementMonthFilter') ? document.getElementById('statementMonthFilter').value : 'all';
+
+      // 1. First Priority: Immediate local School Pro dataset (Zero-latency, 100% real names & data)
+      const offlineData = getTeacherOfflineFinanceData(code, year, month);
+      if (offlineData) {
+        currentTeacherCode = code;
+        localStorage.setItem('makkah_teacher_code', code);
+        renderStatement(offlineData, year);
+        document.getElementById('authSearchSection').classList.add('hidden');
+        document.getElementById('statementContainer').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerText = 'عرض بطاقتي المالية 💳';
+        return;
+      }
+
+      // 2. Second Priority: Live API if server is reachable
+      try {
+        const url = getApiUrl(`api/teachers_finance.php?code=${encodeURIComponent(code)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`);
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data) {
+            currentTeacherCode = code;
+            localStorage.setItem('makkah_teacher_code', code);
+            renderStatement(data.data, year);
+            document.getElementById('authSearchSection').classList.add('hidden');
+            document.getElementById('statementContainer').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+          }
+        }
+        showError(`لم يتم العثور على أي معلم أو موظف برقم الكود (${code}). يرجى التأكد من الكود الوظيفي المعتمد والمحاولة مجدداً.`);
+      } catch (err) {
+        showError(`لم يتم العثور على أي معلم أو موظف برقم الكود (${code}). يرجى التأكد من الكود الوظيفي.`);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerText = 'عرض بطاقتي المالية 💳';
+      }
+    }
+
+    function renderStatement(data, year) {
+      const emp = data.employee;
+      const sum = data.summary;
+      const advances = data.advances || [];
+      const deductions = data.deductions || [];
+      const transactions = data.transactions || [];
+
+      document.getElementById('activeTeacherBadge').innerText = emp.full_name || '--';
+
+      // Header profile
+      document.getElementById('docEmpName').innerText = emp.full_name || '--';
+      document.getElementById('docEmpCode').innerText = emp.emp_code || emp.emp_id;
+      document.getElementById('docEmpJob').innerText = emp.job_title || 'مدرس';
+      document.getElementById('docEmpStatus').innerText = emp.status || 'نشط';
+      document.getElementById('docPrintDate').innerText = new Date().toLocaleDateString('ar-EG');
+      document.getElementById('docAcademicYear').innerText = year === 'all' ? 'جميع السنوات التراكمية' : `${year} - ${Number(year) + 1}م`;
+
+      // Summary
+      const displayedSalary = (year === 'all') ? (sum.total_salary || 0) : (sum.monthly_base_salary || sum.total_salary || 0);
+      document.getElementById('docTotalSalary').innerText = `${formatMoney(displayedSalary)} ريال`;
+      document.getElementById('docTotalBonuses').innerText = `${formatMoney(sum.total_bonuses)} ريال`;
+      document.getElementById('docTotalAdvances').innerText = `${formatMoney(sum.total_advances)} ريال`;
+      document.getElementById('docTotalDeductions').innerText = `${formatMoney(sum.total_deductions)} ريال`;
+      document.getElementById('docNetPayable').innerText = `${formatMoney(sum.net_payable)} ريال`;
+
+      // Advances Table
+      document.getElementById('advancesCountBadge').innerText = `${advances.length} سلفة`;
+      const advTbody = document.getElementById('docAdvancesTableBody');
+      if (advances.length === 0) {
+        advTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد سلف مقيدة في هذه الفترة</td></tr>`;
+      } else {
+        let advHtml = '';
+        advances.forEach((a, i) => {
+          advHtml += `
+            <tr>
+              <td class="text-center font-bold">${i + 1}</td>
+              <td class="font-bold text-amber-900">${a.type_name}</td>
+              <td class="font-black text-amber-700">${formatMoney(a.amount)} ريال</td>
+              <td class="text-center font-mono font-bold">${a.receipt_no || '-'}</td>
+              <td class="text-center font-semibold">${a.trans_date || '-'}</td>
+              <td class="text-center">${a.month_name || a.month_no || '-'}</td>
+            </tr>
+          `;
+        });
+        advTbody.innerHTML = advHtml;
+      }
+
+      // Deductions Table
+      document.getElementById('deductionsCountBadge').innerText = `${deductions.length} استقطاع`;
+      const dedTbody = document.getElementById('docDeductionsTableBody');
+      if (deductions.length === 0) {
+        dedTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد خصومات مقيدة في هذه الفترة</td></tr>`;
+      } else {
+        let dedHtml = '';
+        deductions.forEach((d, i) => {
+          dedHtml += `
+            <tr>
+              <td class="text-center font-bold">${i + 1}</td>
+              <td class="font-bold text-rose-900">${d.type_name}</td>
+              <td class="font-black text-rose-700">${formatMoney(d.amount)} ريال</td>
+              <td class="text-center font-mono font-bold">${d.receipt_no || '-'}</td>
+              <td class="text-center font-semibold">${d.trans_date || '-'}</td>
+              <td class="text-center">${d.month_name || d.month_no || '-'}</td>
+            </tr>
+          `;
+        });
+        dedTbody.innerHTML = dedHtml;
+      }
+
+      // Chronological All Transactions
+      const allTbody = document.getElementById('docAllTransTableBody');
+      if (transactions.length === 0) {
+        allTbody.innerHTML = `<tr><td colspan="6" class="text-center py-2 text-slate-400 font-bold">لا توجد حركات مسجلة</td></tr>`;
+      } else {
+        let allHtml = '';
+        transactions.forEach((tr, i) => {
+          const isCredit = tr.is_credit == 1;
+          allHtml += `
+            <tr>
+              <td class="text-center font-bold text-slate-400">${i + 1}</td>
+              <td class="text-center font-semibold">${tr.trans_date || '-'}</td>
+              <td class="font-bold text-slate-900">${tr.type_name} ${tr.month_name ? `(${tr.month_name})` : ''}</td>
+              <td class="font-black text-blue-700">${isCredit ? formatMoney(tr.amount) + ' ريال' : '-'}</td>
+              <td class="font-black text-amber-700">${!isCredit ? formatMoney(tr.amount) + ' ريال' : '-'}</td>
+              <td class="text-center font-mono font-bold text-slate-600">${tr.receipt_no || '-'}</td>
+            </tr>
+          `;
+        });
+        allTbody.innerHTML = allHtml;
+      }
+
+      // Notice if current year has 0 records but other years exist
+      const noticeEl = document.getElementById('activeYearNotice');
+      if (sum.trans_count === 0 && data.active_years && data.active_years.length > 0) {
+        noticeEl.innerHTML = `
+          <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs font-bold flex flex-wrap items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-2">
+              <i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0"></i>
+              <div>
+                <p class="font-black text-amber-900 text-xs">لا توجد حركات مقيدة للمعلم في العام المختار (${year === 'all' ? 'جميع السنوات' : year})</p>
+                <p class="text-[11px] text-amber-700 mt-0.5">توجد حركات وسجلات مالية لهذا المعلم في سكول برو في: <strong>${data.active_years.join('، ')}</strong></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="setYearAndReload('all')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition flex items-center gap-1 shadow-xs">
+                <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                <span>عرض جميع السنوات التراكمية 🔄</span>
+              </button>
+            </div>
+          </div>
+        `;
+        noticeEl.classList.remove('hidden');
+      } else {
+        noticeEl.classList.add('hidden');
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons(); } catch(e){}
+      }
+    }
+
+    function setYearAndReload(yr) {
+      const select = document.getElementById('statementYearFilter');
+      if (select) select.value = yr;
+      reloadActiveTeacherStatement();
+    }
+
+    function resetAndQueryAnother() {
+      document.getElementById('statementContainer').classList.add('hidden');
+      document.getElementById('authSearchSection').classList.remove('hidden');
+      document.getElementById('teacherCodeInput').value = '';
+      document.getElementById('teacherCodeInput').focus();
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('searchErrorMessage');
+      el.innerText = msg;
+      el.classList.remove('hidden');
+    }
+
+    function hideError() {
+      const el = document.getElementById('searchErrorMessage');
+      el.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

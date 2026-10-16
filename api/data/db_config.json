@@ -1,0 +1,7 @@
+﻿{
+    "connection_string":  "Server=.\\SQLEXPRESS;AttachDbFilename=D:\\Friends Soft\\School Pro\\DB\\sdb.mdf;Integrated Security=True;User Instance=True;Connect Timeout=10;",
+    "certificates_count":  8176,
+    "students_count":  1809,
+    "last_checked":  "2026-10-07 11:53:28",
+    "mdf_path":  "D:\\Friends Soft\\School Pro\\DB\\sdb.mdf"
+}
