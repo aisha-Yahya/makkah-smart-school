@@ -614,7 +614,7 @@
       <div class="flex items-center gap-3 sm:gap-4">
         <!-- Lines Hamburger Menu Button (Antigravity Drawer Trigger) -->
         <button id="sidebarToggleBtn" onclick="toggleSidebarDrawer()" 
-          class="p-2 sm:p-2.5 rounded-xl bg-slate-50 hover:bg-sky-50 text-slate-700 hover:text-brand-600 transition border border-slate-200 hover:border-sky-300 shadow-sm flex items-center justify-center group"
+          class="hidden p-2 sm:p-2.5 rounded-xl bg-slate-50 hover:bg-sky-50 text-slate-700 hover:text-brand-600 transition border border-slate-200 hover:border-sky-300 shadow-sm flex items-center justify-center group"
           title="القائمة الجانبية والأقسام (☰)">
           <i data-lucide="menu" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
         </button>
@@ -6227,6 +6227,13 @@ const firebaseConfig = {
 
     // SIDEBAR DRAWER FUNCTIONS
     function openSidebarDrawer() {
+      // Security Guard: The sidebar drawer is strictly forbidden on the home/landing page!
+      if (!currentRole) {
+        closeSidebarDrawer();
+        const toggleBtn = document.getElementById("sidebarToggleBtn");
+        if (toggleBtn) toggleBtn.classList.add("hidden");
+        return;
+      }
       const drawer = document.getElementById("sidebarDrawer");
       const backdrop = document.getElementById("sidebarBackdrop");
       if (!drawer || !backdrop) return;
@@ -6575,7 +6582,7 @@ const firebaseConfig = {
         <div class="flex-1 overflow-y-auto p-3.5 space-y-2">
           <div class="text-[10px] font-black tracking-wider text-slate-400 px-2 uppercase mb-1">اختر البوابة للدخول</div>
 
-          <div onclick="selectRole('student'); closeSidebarDrawer();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-900 border border-slate-100 bg-white shadow-xs">
+          <div onclick="closeSidebarDrawer(); openStudentAuthModal();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-900 border border-slate-100 bg-white shadow-xs">
             <div class="flex items-center gap-2.5">
               <i data-lucide="graduation-cap" class="w-4 h-4 text-sky-600"></i>
               <div class="text-right">
@@ -6586,7 +6593,7 @@ const firebaseConfig = {
             <i data-lucide="chevron-left" class="w-4 h-4 opacity-60"></i>
           </div>
 
-          <div onclick="selectRole('teacher'); closeSidebarDrawer();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-900 border border-slate-100 bg-white shadow-xs">
+          <div onclick="closeSidebarDrawer(); openTeacherAuthModal();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-900 border border-slate-100 bg-white shadow-xs">
             <div class="flex items-center gap-2.5">
               <i data-lucide="presentation" class="w-4 h-4 text-amber-600"></i>
               <div class="text-right">
@@ -6597,7 +6604,7 @@ const firebaseConfig = {
             <i data-lucide="chevron-left" class="w-4 h-4 opacity-60"></i>
           </div>
 
-          <div onclick="selectRole('admin'); closeSidebarDrawer();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 border border-slate-100 bg-white shadow-xs">
+          <div onclick="closeSidebarDrawer(); openAdminAuthModal();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 border border-slate-100 bg-white shadow-xs">
             <div class="flex items-center gap-2.5">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
               <div class="text-right">
@@ -6608,7 +6615,7 @@ const firebaseConfig = {
             <i data-lucide="chevron-left" class="w-4 h-4 opacity-60"></i>
           </div>
 
-          <div onclick="closeSidebarDrawer(); window.location.href='fees.html';" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-900 border border-slate-100 bg-white shadow-xs">
+          <div onclick="closeSidebarDrawer(); openFeesAuthModal();" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-900 border border-slate-100 bg-white shadow-xs">
             <div class="flex items-center gap-2.5">
               <i data-lucide="wallet" class="w-4 h-4 text-teal-600"></i>
               <div class="text-right">
@@ -6619,7 +6626,7 @@ const firebaseConfig = {
             <i data-lucide="chevron-left" class="w-4 h-4 opacity-60"></i>
           </div>
 
-          <div onclick="closeSidebarDrawer(); window.location.href='teachers_finance.html';" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-900 border border-slate-100 bg-white shadow-xs">
+          <div onclick="closeSidebarDrawer(); window.location.href='my_finance.html';" class="w-full flex items-center justify-between px-3.5 py-3 rounded-2xl cursor-pointer transition text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-900 border border-slate-100 bg-white shadow-xs">
             <div class="flex items-center gap-2.5">
               <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-purple-600"></i>
               <div class="text-right">
@@ -6633,12 +6640,12 @@ const firebaseConfig = {
           <div class="pt-3 border-t border-slate-100 space-y-1.5">
             <div class="text-[10px] font-black tracking-wider text-slate-400 px-2 uppercase">أدوات النظام</div>
 
-            <button onclick="closeSidebarDrawer(); openBackupRestoreModal();" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+            <button onclick="closeSidebarDrawer(); openAdminAuthModal();" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
               <i data-lucide="hard-drive" class="w-4 h-4 text-slate-500"></i>
               <span>أرشيف الـ 100 سنة والنسخ الاحتياطي 💾</span>
             </button>
 
-            <button onclick="closeSidebarDrawer(); openFirebaseSyncModal();" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+            <button onclick="closeSidebarDrawer(); openAdminAuthModal();" class="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
               <i data-lucide="cloud" class="w-4 h-4 text-slate-500"></i>
               <span>المزامنة السحابية (Firebase) ☁️</span>
             </button>
@@ -6664,6 +6671,12 @@ const firebaseConfig = {
     }
 
     function toggleSidebarDrawer() {
+      if (!currentRole) {
+        closeSidebarDrawer();
+        const toggleBtn = document.getElementById("sidebarToggleBtn");
+        if (toggleBtn) toggleBtn.classList.add("hidden");
+        return;
+      }
       const drawer = document.getElementById("sidebarDrawer");
       if (drawer && drawer.classList.contains("translate-x-0")) {
         closeSidebarDrawer();
@@ -7165,6 +7178,8 @@ const firebaseConfig = {
       currentRole = role;
       document.getElementById("roleSelectView").classList.add("hidden");
       document.getElementById("roleBadgeContainer").classList.remove("hidden");
+      const sidebarBtn = document.getElementById("sidebarToggleBtn");
+      if (sidebarBtn) sidebarBtn.classList.remove("hidden");
 
       document.getElementById("studentPortalView").classList.add("hidden");
       document.getElementById("teacherPortalView").classList.add("hidden");
@@ -7201,6 +7216,11 @@ const firebaseConfig = {
       currentActiveStudent = null;
       currentActiveTeacher = null;
       document.body.classList.remove("is-student-mode");
+      const sidebarBtn = document.getElementById("sidebarToggleBtn");
+      if (sidebarBtn) sidebarBtn.classList.add("hidden");
+      if (typeof closeSidebarDrawer === 'function') {
+        closeSidebarDrawer();
+      }
       const classSelect = document.getElementById("studentClassSelect");
       const studentSelect = document.getElementById("studentSelfSelect");
       if (classSelect) {
@@ -10725,6 +10745,10 @@ function generateIntelligentFallbackReply(promptText, hasImage, lesson = activeL
     }
 
     function openFirebaseSyncModal() {
+      if (currentRole !== 'admin') {
+        openAdminAuthModal();
+        return;
+      }
       const modal = document.getElementById("firebaseSyncModal");
       if (!modal) return;
 
@@ -16176,6 +16200,10 @@ function generateIntelligentFallbackReply(promptText, hasImage, lesson = activeL
     });
 
     function openBackupRestoreModal() {
+      if (currentRole !== 'admin') {
+        openAdminAuthModal();
+        return;
+      }
       const modal = document.getElementById("backupRestoreModal");
       if (modal) {
         modal.classList.remove("hidden");
