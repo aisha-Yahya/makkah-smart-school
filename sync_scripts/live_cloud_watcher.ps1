@@ -17,6 +17,26 @@ if (Test-Path $configFile) {
     } catch {}
 }
 
+# If current mdfPath does not exist on this computer, auto-discover it!
+if (-not (Test-Path $mdfPath)) {
+    $candidates = @(
+        "D:\Friends Soft\School Pro\DB\sdb.mdf",
+        "E:\Friends Soft\School Pro\DB\sdb.mdf",
+        "C:\Friends Soft\School Pro\DB\sdb.mdf",
+        "D:\Friends Soft2\School Pro\DB\sdb.mdf",
+        "E:\Friends Soft2\School Pro\DB\sdb.mdf",
+        "C:\Friends Soft2\School Pro\DB\sdb.mdf",
+        "D:\School Pro\DB\sdb.mdf",
+        "C:\School Pro\DB\sdb.mdf"
+    )
+    foreach ($cand in $candidates) {
+        if (Test-Path $cand) {
+            $mdfPath = $cand
+            break
+        }
+    }
+}
+
 $roleFile = Join-Path $rootDir "api\data\sync_role.json"
 $syncRole = "all"
 if (Test-Path $roleFile) {
@@ -33,18 +53,17 @@ Write-Host "  Monitoring Database: $mdfPath" -ForegroundColor White
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $lastMtime = ""
-if (Test-Path $mdfPath) {
-    $lastMtime = (Get-Item $mdfPath).LastWriteTimeUtc.Ticks.ToString()
-}
+$initialSyncDone = $false
 
 while ($true) {
     try {
         if (Test-Path $mdfPath) {
             $currentMtime = (Get-Item $mdfPath).LastWriteTimeUtc.Ticks.ToString()
-            if ($lastMtime -ne "" -and $currentMtime -ne $lastMtime) {
+            if (-not $initialSyncDone -or ($lastMtime -ne "" -and $currentMtime -ne $lastMtime)) {
                 $lastMtime = $currentMtime
+                $initialSyncDone = $true
                 $stamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-                Write-Host "[$stamp] Detected change in School Pro database!" -ForegroundColor Green
+                Write-Host "[$stamp] Syncing School Pro database ($syncRole)..." -ForegroundColor Green
                 Write-Host "[$stamp] Step 1: Syncing SQL Server to Platform SQLite..." -ForegroundColor Yellow
                 
                 & powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "sync_school_pro.ps1") | Out-Null
