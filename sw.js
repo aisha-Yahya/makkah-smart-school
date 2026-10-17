@@ -3,7 +3,7 @@
  * خادم الخدمة للعمل الكامل أوف لاين بدون اتصال بالإنترنت
  */
 
-const CACHE_NAME = 'makkah-offline-cache-v1';
+const CACHE_NAME = 'makkah-offline-cache-v2';
 
 const STATIC_ASSETS = [
   './',
@@ -17,6 +17,10 @@ const STATIC_ASSETS = [
   './logo.png',
   './makkah-logo.png',
   './school_logo.ico',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png',
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest'
 ];
