@@ -17,8 +17,18 @@ if (Test-Path $configFile) {
     } catch {}
 }
 
+$roleFile = Join-Path $rootDir "api\data\sync_role.json"
+$syncRole = "all"
+if (Test-Path $roleFile) {
+    try {
+        $rCfg = Get-Content $roleFile -Raw | ConvertFrom-Json
+        if ($rCfg.role) { $syncRole = $rCfg.role }
+    } catch {}
+}
+
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  Makkah Smart School - Real-Time Cloud Watcher" -ForegroundColor Yellow
+Write-Host "  Role Mode: $syncRole" -ForegroundColor Green
 Write-Host "  Monitoring Database: $mdfPath" -ForegroundColor White
 Write-Host "==========================================================" -ForegroundColor Cyan
 
@@ -39,8 +49,8 @@ while ($true) {
                 
                 & powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "sync_school_pro.ps1") | Out-Null
                 
-                Write-Host "[$stamp] Step 2: Generating Cloud Firestore batches & offline dataset..." -ForegroundColor Yellow
-                & $phpExe (Join-Path $PSScriptRoot "export_complete_firestore_payload.php") | Out-Null
+                Write-Host "[$stamp] Step 2: Generating Cloud Firestore batches & offline dataset (Role: $syncRole)..." -ForegroundColor Yellow
+                & $phpExe (Join-Path $PSScriptRoot "export_complete_firestore_payload.php") "--role=$syncRole" | Out-Null
                 
                 Write-Host "[$stamp] Step 3: Uploading live changes to Firebase Cloud..." -ForegroundColor Yellow
                 & powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "upload_batches_to_firestore.ps1") | Out-Null

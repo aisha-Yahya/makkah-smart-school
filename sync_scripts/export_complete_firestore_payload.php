@@ -20,6 +20,24 @@ foreach (glob($batchDir . '/*.json') as $oldBatch) {
     @unlink($oldBatch);
 }
 
+// Detect Sync Role (secretariat, finance, or all)
+$syncRole = 'all';
+$roleFile = $rootDir . '/api/data/sync_role.json';
+if (file_exists($roleFile)) {
+    $roleCfg = json_decode(file_get_contents($roleFile), true);
+    if (!empty($roleCfg['role'])) {
+        $syncRole = strtolower(trim($roleCfg['role']));
+    }
+}
+if (!empty($argv)) {
+    foreach ($argv as $arg) {
+        if (strpos($arg, '--role=') === 0) {
+            $syncRole = strtolower(trim(substr($arg, 7)));
+        }
+    }
+}
+echo "Active Sync Engine Role: [{$syncRole}]\n";
+
 echo "1. Fetching all students from SQLite...\n";
 $students = $pdo->query("SELECT * FROM students ORDER BY student_id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $totalStudents = count($students);
@@ -301,21 +319,44 @@ foreach ($students as $st) {
     foreach ($profileDoc as $k => $v) {
         $fsFields[$k] = phpValToFirestore($v);
     }
-    $firestoreWrites[] = [
+    $writeEntry = [
         "update" => [
             "name"   => $firestoreDocPath,
             "fields" => $fsFields
         ]
     ];
+    if ($syncRole === 'secretariat') {
+        $writeEntry["updateMask"] = [
+            "fieldPaths" => [
+                "student_id", "registration_code", "student_name", "class_name",
+                "seat_number", "national_id", "certificate", "summary", "percentage",
+                "grade_estimate", "exam_result", "tested_months", "available_years",
+                "monthly_report", "monthly_reports_by_month", "last_updated"
+            ]
+        ];
+    } else if ($syncRole === 'finance') {
+        $writeEntry["updateMask"] = [
+            "fieldPaths" => [
+                "student_id", "registration_code", "total_fees", "total_paid",
+                "remaining_balance", "payment_status", "last_payment_date",
+                "account_summary", "transactions", "last_updated"
+            ]
+        ];
+    }
+    $firestoreWrites[] = $writeEntry;
 
     // Also write by short ID if different from code
     if ((string)$stId !== $code) {
-        $firestoreWrites[] = [
+        $writeEntryShort = [
             "update" => [
                 "name"   => "projects/makkah-smart-school/databases/(default)/documents/students/{$stId}",
                 "fields" => $fsFields
             ]
         ];
+        if (isset($writeEntry["updateMask"])) {
+            $writeEntryShort["updateMask"] = $writeEntry["updateMask"];
+        }
+        $firestoreWrites[] = $writeEntryShort;
     }
 
     if (count($firestoreWrites) >= $batchSize) {
